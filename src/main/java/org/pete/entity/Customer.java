@@ -2,8 +2,7 @@ package org.pete.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -22,10 +21,10 @@ public class Customer {
     private String password;
     @Column(name = "CITIZEN_ID", length = 13, nullable = false)
     private String citizenId;
-    @Column(name = "PIN_NUM", nullable = false, precision = 6)
-    private Integer pinNum;
+    @Column(name = "PIN_NUM", length = 6, nullable = false)
+    private String pinNum;
     @Column(name = "CREATION_DATE", nullable = false)
-    private Timestamp creationDate;
+    private LocalDateTime creationDate;
     @Column(name = "LAST_UPDATE_DATE", nullable = false)
-    private Timestamp lastUpdateDate;
+    private LocalDateTime lastUpdateDate;
 }

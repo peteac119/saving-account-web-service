@@ -5,8 +5,8 @@ spring:
     username: peteadmin
     password: somepass123
   jpa:
+    show-sql: true
     hibernate:
-      show-sql: true
       ddl-auto: none
     properties:
       hibernate:

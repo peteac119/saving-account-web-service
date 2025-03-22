@@ -11,6 +11,7 @@ import org.pete.model.request.DepositRequest;
 import org.pete.model.request.TransferRequest;
 import org.pete.model.result.CreateSavingAccountResult;
 import org.pete.model.result.DepositResult;
+import org.pete.model.result.FindSavingAccountInfoResult;
 import org.pete.model.result.TransferResult;
 import org.pete.repository.UserRepository;
 import org.pete.repository.SavingAccountRepository;
@@ -369,21 +370,62 @@ public class SavingAccountsServiceTest {
             assertThat(actualResult, instanceOf(TransferResult.TransferAmountIsLessThanOne.class));
         }
 
-        private SavingAccounts mockSavingAccount(String accountNumber,
-                                                 BigDecimal balance,
-                                                 String pinNumber,
-                                                 Long userId) {
-            Users users = new Users();
-            users.setId(userId);
-            users.setPinNum(pinNumber);
+    }
 
-            SavingAccounts savingAccounts = new SavingAccounts();
-            savingAccounts.setAccountNumber(accountNumber);
-            savingAccounts.setBalance(balance);
-            savingAccounts.setUsers(users);
+    @Nested
+    public class FindSavingAccountInfoTestSuite {
+        @Test
+        public void should_get_account_info_successfully() {
+            String mockAccountNumber = "accountNumber";
+            Long mockRequesterId = 5L;
+            SavingAccounts mockSavingAccount = mockSavingAccount(mockAccountNumber, BigDecimal.TEN, "testPinNumber", mockRequesterId);
+            when(mockSavingAccountRepository.findOneByAccountNumber(mockAccountNumber)).thenReturn(mockSavingAccount);
 
-            return savingAccounts;
+            FindSavingAccountInfoResult actualResult = savingAccountService.findSavingAccountInfo(mockAccountNumber, mockRequesterId);
+
+            assertThat(actualResult, instanceOf(FindSavingAccountInfoResult.Success.class));
+            FindSavingAccountInfoResult.Success successResult = (FindSavingAccountInfoResult.Success) actualResult;
+            assertEquals(mockAccountNumber, successResult.getAccountNumber());
+            assertEquals(BigDecimal.TEN, successResult.getCurrentBalance());
+        }
+
+        @Test
+        public void should_return_account_not_found_if_account_is_not_found_in_DB() {
+            String mockAccountNumber = "invalidAccountNumber";
+            Long mockRequesterId = 5L;
+            when(mockSavingAccountRepository.findOneByAccountNumber(mockAccountNumber)).thenReturn(null);
+
+            FindSavingAccountInfoResult actualResult = savingAccountService.findSavingAccountInfo(mockAccountNumber, mockRequesterId);
+
+            assertThat(actualResult, instanceOf(FindSavingAccountInfoResult.AccountNotFound.class));
+        }
+
+        @Test
+        public void should_return_wrong_account_number_if_requester_id_is_not_the_same_in_the_saving_account() {
+            String mockAccountNumber = "someAccountNumber";
+            Long mockRequesterId = 10L;
+            SavingAccounts mockSavingAccount = mockSavingAccount(mockAccountNumber, BigDecimal.TEN, "testPinNumber", 5L);
+            when(mockSavingAccountRepository.findOneByAccountNumber(mockAccountNumber)).thenReturn(mockSavingAccount);
+
+            FindSavingAccountInfoResult actualResult = savingAccountService.findSavingAccountInfo(mockAccountNumber, mockRequesterId);
+
+            assertThat(actualResult, instanceOf(FindSavingAccountInfoResult.WrongAccountNumber.class));
         }
     }
 
+    private SavingAccounts mockSavingAccount(String accountNumber,
+                                             BigDecimal balance,
+                                             String pinNumber,
+                                             Long userId) {
+        Users users = new Users();
+        users.setId(userId);
+        users.setPinNum(pinNumber);
+
+        SavingAccounts savingAccounts = new SavingAccounts();
+        savingAccounts.setAccountNumber(accountNumber);
+        savingAccounts.setBalance(balance);
+        savingAccounts.setUsers(users);
+
+        return savingAccounts;
+    }
 }

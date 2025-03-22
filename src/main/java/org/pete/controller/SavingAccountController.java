@@ -6,6 +6,7 @@ import org.pete.model.request.DepositRequest;
 import org.pete.model.request.TransferRequest;
 import org.pete.model.response.CreateSavingAccountResponse;
 import org.pete.model.response.DepositResponse;
+import org.pete.model.response.TransferResponse;
 import org.pete.model.result.CreateSavingAccountResult;
 import org.pete.model.result.DepositResult;
 import org.pete.model.result.TransferResult;
@@ -85,27 +86,72 @@ public class SavingAccountController {
     }
 
     @PostMapping(path = "/transfer")
-    public ResponseEntity<?> transfer(@RequestBody TransferRequest transferRequest, Authentication authentication) {
+//    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<TransferResponse> transfer(@RequestBody TransferRequest transferRequest, Authentication authentication) {
         if (Objects.isNull(authentication) || !(authentication.getPrincipal() instanceof UserPrinciple)) {
-            return null;
+            return ResponseEntity.unprocessableEntity().build();
         }
 
         Long senderId = ((UserPrinciple) authentication.getPrincipal()).getUsers().getId();
         TransferResult result = savingAccountService.transfer(transferRequest, senderId);
 
-//        return switch (result) {
-//
-//        };
-
-        return ResponseEntity.ok(null);
+        return switch (result) {
+            case TransferResult.Success success ->
+                    ResponseEntity.ok(
+                            new TransferResponse(
+                                    success.getSenderAccountNumber(),
+                                    success.getBeneficiaryAccountNumber(),
+                                    success.getCurrentSenderBalance(),
+                                    success.getCurrentBeneficiaryBalance(),
+                                    null
+                            )
+                    );
+            case TransferResult.SavingAccountNotFound savingAccountNotFound ->
+                    ResponseEntity
+                            .status(HttpStatus.NOT_FOUND)
+                            .body(
+                                    new TransferResponse(
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            savingAccountNotFound.getMessage()
+                                    )
+                            );
+            case TransferResult.NotEnoughBalance notEnoughBalance ->
+                    ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(
+                                    new TransferResponse(
+                                            notEnoughBalance.getSenderAccountNumber(),
+                                            null,
+                                            notEnoughBalance.getCurrentSenderBalance(),
+                                            null,
+                                            null
+                                    )
+                            );
+            default -> ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(
+                                    new TransferResponse(
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            TransferResult.getErrorMessageFromResultType(result)
+                                    )
+                            );
+        };
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> findSavingAccount() {
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(path = "/history")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> listTransactions() {
         return ResponseEntity.ok().build();
     }

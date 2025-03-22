@@ -74,16 +74,16 @@ public class SavingAccountService {
 
     @Transactional
     public DepositResult deposit(DepositRequest request) {
-        BigDecimal depositAmount = request.getDepositAmount();
-
-        if (depositAmountIsLessThanOne(depositAmount)) {
-            return new DepositResult.DepositAmountIsLessThanOne();
-        }
-
         SavingAccount savingAccount = savingAccountRepository.findOneByAccountNumber(request.getAccountNumber());
 
         if (Objects.isNull(savingAccount)) {
             return new DepositResult.SavingAccountNotFound();
+        }
+
+        BigDecimal depositAmount = request.getDepositAmount();
+
+        if (depositAmountIsLessThanOne(depositAmount)) {
+            return new DepositResult.DepositAmountIsLessThanOne();
         }
 
         BigDecimal currentBalance = savingAccount.getBalance();

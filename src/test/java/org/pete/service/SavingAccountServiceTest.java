@@ -144,15 +144,6 @@ public class SavingAccountServiceTest {
         }
 
         @Test
-        public void should_not_deposit_if_the_deposit_amount_is_less_than_one() {
-            DepositRequest mockRequest = new DepositRequest(BigDecimal.ZERO, "5524867");
-
-            DepositResult actualResult = savingAccountService.deposit(mockRequest);
-
-            assertThat(actualResult, instanceOf(DepositResult.DepositAmountIsLessThanOne.class));
-        }
-
-        @Test
         public void should_not_deposit_if_the_saving_account_is_not_found() {
             DepositRequest mockRequest = new DepositRequest(BigDecimal.valueOf(200.00), "2254888");
             when(mockSavingAccountRepository.findOneByAccountNumber(mockRequest.getAccountNumber())).thenReturn(null);
@@ -160,6 +151,19 @@ public class SavingAccountServiceTest {
             DepositResult actualResult = savingAccountService.deposit(mockRequest);
 
             assertThat(actualResult, instanceOf(DepositResult.SavingAccountNotFound.class));
+        }
+
+        @Test
+        public void should_not_deposit_if_the_deposit_amount_is_less_than_one() {
+            DepositRequest mockRequest = new DepositRequest(BigDecimal.ZERO, "5524867");
+            SavingAccount mockSavingAccount = new SavingAccount();
+            mockSavingAccount.setAccountNumber(mockRequest.getAccountNumber());
+            mockSavingAccount.setBalance(BigDecimal.ONE);
+            when(mockSavingAccountRepository.findOneByAccountNumber(mockRequest.getAccountNumber())).thenReturn(mockSavingAccount);
+
+            DepositResult actualResult = savingAccountService.deposit(mockRequest);
+
+            assertThat(actualResult, instanceOf(DepositResult.DepositAmountIsLessThanOne.class));
         }
     }
 

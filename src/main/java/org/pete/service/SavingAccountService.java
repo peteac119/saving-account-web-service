@@ -74,7 +74,6 @@ public class SavingAccountService {
 
     @Transactional
     public DepositResult deposit(DepositRequest request) {
-
         BigDecimal depositAmount = request.getDepositAmount();
 
         if (depositAmountIsLessThanOne(depositAmount)) {
@@ -89,17 +88,16 @@ public class SavingAccountService {
 
         BigDecimal currentBalance = savingAccount.getBalance();
         savingAccount.setBalance(currentBalance.add(depositAmount));
-        savingAccount.setLastUpdateDate(LocalDateTime.now());
 
         return new DepositResult.Success(savingAccount.getAccountNumber(), savingAccount.getBalance());
     }
 
     private boolean depositAmountIsLessThanOne(BigDecimal depositAmount) {
-        return Objects.isNull(depositAmount) || BigDecimal.ONE.compareTo(depositAmount) <= 0;
+        return Objects.isNull(depositAmount) || BigDecimal.ONE.compareTo(depositAmount) > 0;
     }
 
     @Transactional
-    public void transfer(TransferRequest request) {
+    public void transfer(TransferRequest request, Long senderId) {
         // TODO Need to make sure that the user is really a sender.
         SavingAccount senderAccount = savingAccountRepository.findOneByAccountNumber(request.getSenderAccountNum());
         SavingAccount beneficiaryAccount = savingAccountRepository.findOneByAccountNumber(request.getBeneficiaryAccountNum());

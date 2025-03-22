@@ -130,6 +130,10 @@ public class SavingAccountService {
             return new TransferResult.SavingAccountNotFound("Either sender or beneficiary account is incorrect.");
         }
 
+        if (Objects.equals(senderAccount.getAccountNumber(), beneficiaryAccount.getAccountNumber())) {
+            return new TransferResult.SameAccountNumber();
+        }
+
         if (Objects.isNull(request.getPinNumber())) {
             return new TransferResult.NotPinNumberProvided();
         }

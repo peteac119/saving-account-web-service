@@ -32,6 +32,7 @@ public class TransferResult {
     public static class WrongPinNumber extends TransferResult {}
     public static class TransferAmountIsLessThanOne extends TransferResult {}
     public static class WrongSenderAccount extends TransferResult {}
+    public static class SameAccountNumber extends TransferResult {}
 
     public static String getErrorMessageFromResultType(TransferResult result) {
         return switch (result) {
@@ -39,6 +40,7 @@ public class TransferResult {
             case WrongPinNumber wrongPinNumber -> "Pin number is not matched";
             case TransferAmountIsLessThanOne transferAmountIsLessThanOne -> "Transfer amount must be more than one";
             case WrongSenderAccount wrongSenderAccount -> "Wrong sender account";
+            case SameAccountNumber sameAccountNumber -> "Both sender and beneficiary accounts are the same";
             default -> null;
         };
     }

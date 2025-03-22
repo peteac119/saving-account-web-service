@@ -222,6 +222,25 @@ public class SavingAccountsServiceTest {
         }
 
         @Test
+        public void should_not_transfer_money_if_both_sender_and_beneficiary_accounts_are_the_same() {
+            SavingAccounts mockSenderAccount = mockSavingAccount("4455667", BigDecimal.valueOf(500L), "662144", 3L);
+            SavingAccounts mockBeneficiaryAccount = mockSavingAccount("4455667", BigDecimal.valueOf(600L), "662144", 3L);
+            BigDecimal mockTransferAmount = BigDecimal.TEN;
+            TransferRequest mockRequest = new TransferRequest(
+                    mockSenderAccount.getAccountNumber(),
+                    mockBeneficiaryAccount.getAccountNumber(),
+                    mockTransferAmount,
+                    "662144"
+            );
+            when(mockSavingAccountRepository.findOneByAccountNumber(mockSenderAccount.getAccountNumber())).thenReturn(mockSenderAccount);
+            when(mockSavingAccountRepository.findOneByAccountNumber(mockBeneficiaryAccount.getAccountNumber())).thenReturn(mockBeneficiaryAccount);
+
+            TransferResult actualResult = savingAccountService.transfer(mockRequest, 5L);
+
+            assertThat(actualResult, instanceOf(TransferResult.SameAccountNumber.class));
+        }
+
+        @Test
         public void should_not_transfer_money_if_beneficiary_account_does_not_exist() {
             String mockInvalidAccountNumber = "8854789";
             SavingAccounts mockSenderAccount = mockSavingAccount("8847598", BigDecimal.valueOf(400L), "996875", 7L);

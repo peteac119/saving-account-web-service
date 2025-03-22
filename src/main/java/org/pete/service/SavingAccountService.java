@@ -7,6 +7,7 @@ import org.pete.model.request.DepositRequest;
 import org.pete.model.request.TransferRequest;
 import org.pete.model.result.CreateSavingAccountResult;
 import org.pete.model.result.DepositResult;
+import org.pete.model.result.TransferResult;
 import org.pete.repository.UserRepository;
 import org.pete.repository.SavingAccountRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -96,44 +97,68 @@ public class SavingAccountService {
     }
 
     @Transactional
-    public void transfer(TransferRequest request, Long senderId) {
-        // TODO Need to make sure that the user is really a sender.
+    public TransferResult transfer(TransferRequest request, Long senderId) {
         SavingAccounts senderAccount = savingAccountRepository.findOneByAccountNumber(request.getSenderAccountNum());
         SavingAccounts beneficiaryAccount = savingAccountRepository.findOneByAccountNumber(request.getBeneficiaryAccountNum());
 
-        if (Objects.isNull(senderAccount) || Objects.isNull(beneficiaryAccount)) {
-            return;
-        }
+        TransferResult validationResult = validateAccountAndAmount(senderAccount, beneficiaryAccount, request, senderId);
 
-        if (Objects.isNull(request.getPinNumber())) {
-            return;
-        }
-
-        Users sender = senderAccount.getUsers();
-        String pinNumber = request.getPinNumber();
-        if (pinNumberIsNotTheSame(pinNumber, sender.getPinNum())) {
-            return;
+        if(Objects.nonNull(validationResult)) {
+            return validationResult;
         }
 
         BigDecimal transferAmount = request.getTransferAmount();
-
-        if (transferAmountIsLessThanOne(transferAmount)) {
-            return;
-        }
-
-        if (senderBalanceIsLessThanTransferAmount(transferAmount, senderAccount)) {
-            return;
-        }
-
         BigDecimal newSenderBalance = senderAccount.getBalance().subtract(transferAmount);
         BigDecimal newBeneficiaryBalance = beneficiaryAccount.getBalance().add(transferAmount);
 
         senderAccount.setBalance(newSenderBalance);
         beneficiaryAccount.setBalance(newBeneficiaryBalance);
+
+        return new TransferResult.Success(
+                senderAccount.getAccountNumber(),
+                beneficiaryAccount.getAccountNumber(),
+                senderAccount.getBalance(),
+                beneficiaryAccount.getBalance()
+        );
+    }
+
+    private TransferResult validateAccountAndAmount(SavingAccounts senderAccount,
+                                                    SavingAccounts beneficiaryAccount,
+                                                    TransferRequest request,
+                                                    Long senderId) {
+        if (Objects.isNull(senderAccount) || Objects.isNull(beneficiaryAccount)) {
+            return new TransferResult.SavingAccountNotFound("Either sender or beneficiary account is incorrect.");
+        }
+
+        if (Objects.isNull(request.getPinNumber())) {
+            return new TransferResult.NotPinNumberProvided();
+        }
+
+        Users sender = senderAccount.getUsers();
+
+        if (!Objects.equals(sender.getId(), senderId)) {
+            return new TransferResult.WrongSenderAccount();
+        }
+
+        if (pinNumberIsNotTheSame(request.getPinNumber(), sender.getPinNum())) {
+            return new TransferResult.WrongPinNumber();
+        }
+
+        BigDecimal transferAmount = request.getTransferAmount();
+
+        if (transferAmountIsLessThanOne(transferAmount)) {
+            return new TransferResult.TransferAmountIsLessThanOne();
+        }
+
+        if (senderBalanceIsLessThanTransferAmount(transferAmount, senderAccount)) {
+            return new TransferResult.NotEnoughBalance(senderAccount.getAccountNumber(), senderAccount.getBalance());
+        }
+
+        return null;
     }
 
     private boolean pinNumberIsNotTheSame(String pinNumber, String originalPinNum) {
-        return originalPinNum.equals(bCryptPasswordEncoder.encode(pinNumber));
+        return !bCryptPasswordEncoder.matches(pinNumber, originalPinNum);
     }
 
     private boolean senderBalanceIsLessThanTransferAmount(BigDecimal transferAmount, SavingAccounts senderAccount) {
@@ -141,7 +166,7 @@ public class SavingAccountService {
     }
 
     private boolean transferAmountIsLessThanOne(BigDecimal transferAmount) {
-        return Objects.isNull(transferAmount) || BigDecimal.ONE.compareTo(transferAmount) < 0;
+        return Objects.isNull(transferAmount) || BigDecimal.ONE.compareTo(transferAmount) > 0;
     }
 
     @Transactional(readOnly = true)

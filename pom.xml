@@ -76,6 +76,9 @@
                         -javaagent:${settings.localRepository}/org/mockito/mockito-core/5.14.2/mockito-core-5.14.2.jar
                         -Xshare:off
                     </argLine>
+                    <systemProperties>
+                        <junit.jupiter.execution.parallel.enabled>true</junit.jupiter.execution.parallel.enabled>
+                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>

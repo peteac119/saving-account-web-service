@@ -1,15 +1,22 @@
 package org.pete.controller;
 
+import org.pete.model.principle.UserPrinciple;
 import org.pete.model.request.CreateSavingAccountRequest;
 import org.pete.model.request.DepositRequest;
+import org.pete.model.request.TransferRequest;
 import org.pete.model.response.CreateSavingAccountResponse;
 import org.pete.model.response.DepositResponse;
 import org.pete.model.result.CreateSavingAccountResult;
 import org.pete.model.result.DepositResult;
+import org.pete.model.result.TransferResult;
 import org.pete.service.SavingAccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping(path = "/saving-account")
@@ -21,7 +28,8 @@ public class SavingAccountController {
         this.savingAccountService = savingAccountService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
+//    @PreAuthorize("hasRole('TELLER')")
     public ResponseEntity<CreateSavingAccountResponse> createSavingAccount(@RequestBody CreateSavingAccountRequest request) {
         CreateSavingAccountResult result = savingAccountService.createSavingAccount(request);
         return switch(result) {
@@ -46,6 +54,7 @@ public class SavingAccountController {
     }
 
     @PostMapping(path = "/deposit")
+//    @PreAuthorize("hasRole('TELLER')")
     public ResponseEntity<DepositResponse> deposit(@RequestBody DepositRequest depositRequest) {
         DepositResult result = savingAccountService.deposit(depositRequest);
         return switch (result) {
@@ -76,8 +85,19 @@ public class SavingAccountController {
     }
 
     @PostMapping(path = "/transfer")
-    public ResponseEntity<?> transfer() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> transfer(@RequestBody TransferRequest transferRequest, Authentication authentication) {
+        if (Objects.isNull(authentication) || !(authentication.getPrincipal() instanceof UserPrinciple)) {
+            return null;
+        }
+
+        Long senderId = ((UserPrinciple) authentication.getPrincipal()).getUsers().getId();
+        TransferResult result = savingAccountService.transfer(transferRequest, senderId);
+
+//        return switch (result) {
+//
+//        };
+
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping

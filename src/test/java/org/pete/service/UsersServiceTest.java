@@ -1,6 +1,5 @@
 package org.pete.service;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -22,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-// TODO Make the test support parelle test
+// TODO Make the test support parallel test
 public class UsersServiceTest {
     private final UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
     private final UserInfoValidator mockUserInfoValidator = Mockito.mock(UserInfoValidator.class);

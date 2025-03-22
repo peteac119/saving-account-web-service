@@ -146,12 +146,12 @@ public class SavingAccountService {
 
     @Transactional(readOnly = true)
     public void findSavingAccount(Long customerId) {
-        List<SavingAccounts> savingAccountsList = savingAccountRepository.findByCustomerId(customerId);
-
-        if (Objects.isNull(savingAccountsList) || savingAccountsList.isEmpty()) {
-            return;
-        }
-
-        return;
+//        List<SavingAccounts> savingAccountsList = savingAccountRepository.findByCustomerId(customerId);
+//
+//        if (Objects.isNull(savingAccountsList) || savingAccountsList.isEmpty()) {
+//            return;
+//        }
+//
+//        return;
     }
 }

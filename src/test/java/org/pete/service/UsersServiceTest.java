@@ -5,12 +5,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.pete.constant.Role;
 import org.pete.entity.Users;
 import org.pete.model.request.RegisterCustomerRequest;
 import org.pete.model.result.RegisterCustomerResult;
 import org.pete.repository.UserRepository;
 import org.pete.validator.UserInfoValidator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-
+// TODO Make the test support parelle test
 public class UsersServiceTest {
     private final UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
     private final UserInfoValidator mockUserInfoValidator = Mockito.mock(UserInfoValidator.class);
@@ -144,6 +147,7 @@ public class UsersServiceTest {
             assertEquals(mockCustomerRequest.getThaiName().trim(), actualUsers.getThaiName());
             assertEquals(mockCustomerRequest.getEnglishName().trim(), actualUsers.getEnglishName());
             assertEquals(mockCustomerRequest.getPinNum().trim(), actualUsers.getPinNum());
+            assertEquals(List.of(Role.CUSTOMER).toString(), actualUsers.getRole());
         }
     }
 
@@ -157,12 +161,5 @@ public class UsersServiceTest {
         registerCustomerRequest.setCitizenId("1234567890123");
         registerCustomerRequest.setPinNum("123456");
         return registerCustomerRequest;
-    }
-
-    @AfterEach
-    public void tearDown() {
-        Mockito.reset(mockUserRepository);
-        Mockito.reset(mockUserInfoValidator);
-        Mockito.reset(mockBCryptPasswordEncoder);
     }
 }

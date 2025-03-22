@@ -1,5 +1,6 @@
 package org.pete.service;
 
+import org.pete.constant.Role;
 import org.pete.entity.Users;
 import org.pete.model.request.RegisterCustomerRequest;
 import org.pete.model.result.RegisterCustomerResult;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -36,15 +38,15 @@ public class UserService {
 
         String email = registerCustomerRequest.getEmail().trim();
         String citizenId = registerCustomerRequest.getCitizenId().trim();
-        Users users = userRepository.findOneByEmailOrCitizenId(email, citizenId);
+        Users user = userRepository.findOneByEmailOrCitizenId(email, citizenId);
 
-        if (Objects.nonNull(users)) {
+        if (Objects.nonNull(user)) {
             return new RegisterCustomerResult.CustAlreadyExists();
         }
 
-        users = mapNewCustomer(registerCustomerRequest);
+        user = mapNewCustomer(registerCustomerRequest);
 
-        userRepository.save(users);
+        userRepository.save(user);
 
         return new RegisterCustomerResult.Success();
     }
@@ -58,6 +60,7 @@ public class UserService {
         users.setEnglishName(registerCustomerRequest.getEnglishName().trim());
         users.setEmail(registerCustomerRequest.getEmail().trim());
         users.setCitizenId(registerCustomerRequest.getCitizenId().trim());
+        users.setRole(List.of(Role.CUSTOMER).toString());
 
         users.setPassword(bCryptPasswordEncoder.encode(password));
         users.setPinNum(bCryptPasswordEncoder.encode(pinNumber));

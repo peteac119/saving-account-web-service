@@ -19,7 +19,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping(path = "/customer")
+    @PostMapping(path = "/customer/register")
     public ResponseEntity<RegisterCustomerResponse> registerCustomer(@RequestBody RegisterCustomerRequest registerCustomerRequest) {
         RegisterCustomerResult result = userService.registerCustomer(registerCustomerRequest);
         return switch (result) {

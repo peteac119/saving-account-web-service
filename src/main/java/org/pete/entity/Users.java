@@ -20,11 +20,11 @@ public class Users {
     private String englishName;
     @Column(name = "EMAIL", length = 100, nullable = false)
     private String email;
-    @Column(name = "PASSWORD", length = 20, nullable = false)
+    @Column(name = "PASSWORD", length = 50, nullable = false)
     private String password;
     @Column(name = "CITIZEN_ID", length = 13, nullable = false)
     private String citizenId;
-    @Column(name = "PIN_NUM", length = 6)
+    @Column(name = "PIN_NUM", length = 50)
     private String pinNum;
     @Column(name = "ROLE", length = 50, nullable = false)
     private String role;

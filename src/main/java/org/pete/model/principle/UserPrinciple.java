@@ -5,8 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 public class UserPrinciple implements UserDetails {
 
@@ -18,7 +17,18 @@ public class UserPrinciple implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(users.getRole()));
+        String roleStr = users.getRole();
+
+        if (Objects.isNull(roleStr)) {
+            return List.of();
+        }
+
+        roleStr = roleStr.replace("[", "").replace("]", "");
+        String[] roleList = roleStr.split(",");
+
+        return Arrays.stream(roleList)
+                .map(SimpleGrantedAuthority::new)
+                .toList();
     }
 
     @Override

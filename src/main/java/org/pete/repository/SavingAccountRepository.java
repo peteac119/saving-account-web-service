@@ -12,7 +12,5 @@ public interface SavingAccountRepository extends JpaRepository<SavingAccounts, L
     @Query(value = "select nextval('account_num_seq')", nativeQuery = true)
     Long nextAccountNumber();
 
-    List<SavingAccounts> findByCustomerId(Long customerId);
-
     SavingAccounts findOneByAccountNumber(String accountNumber);
 }

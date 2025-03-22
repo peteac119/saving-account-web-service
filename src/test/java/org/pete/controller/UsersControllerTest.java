@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class UsersControllerTest {
@@ -23,10 +22,11 @@ public class UsersControllerTest {
     public class RegisterUsersTestSuite {
         @Test
         public void should_return_created_http_status_if_customer_registration_is_successful() {
+            RegisterCustomerRequest mockRequest = new RegisterCustomerRequest();
+            mockRequest.setEnglishName("Success");
+            when(mockUserService.registerCustomer(mockRequest)).thenReturn(new RegisterCustomerResult.Success());
 
-            when(mockUserService.registerCustomer(any(RegisterCustomerRequest.class))).thenReturn(new RegisterCustomerResult.Success());
-
-            ResponseEntity<RegisterCustomerResponse> actualResult = userController.registerCustomer(new RegisterCustomerRequest());
+            ResponseEntity<RegisterCustomerResponse> actualResult = userController.registerCustomer(mockRequest);
 
             RegisterCustomerResponse resBody = actualResult.getBody();
             assertTrue(resBody.isCreated());
@@ -37,9 +37,11 @@ public class UsersControllerTest {
 
         @Test
         public void should_return_ok_http_status_if_customer_has_already_existed() {
-            when(mockUserService.registerCustomer(any(RegisterCustomerRequest.class))).thenReturn(new RegisterCustomerResult.CustAlreadyExists());
+            RegisterCustomerRequest mockRequest = new RegisterCustomerRequest();
+            mockRequest.setEnglishName("Already exist");
+            when(mockUserService.registerCustomer(mockRequest)).thenReturn(new RegisterCustomerResult.CustAlreadyExists());
 
-            ResponseEntity<RegisterCustomerResponse> actualResult = userController.registerCustomer(new RegisterCustomerRequest());
+            ResponseEntity<RegisterCustomerResponse> actualResult = userController.registerCustomer(mockRequest);
 
             RegisterCustomerResponse resBody = actualResult.getBody();
             assertFalse(resBody.isCreated());
@@ -49,9 +51,11 @@ public class UsersControllerTest {
 
         @Test
         public void should_return_bad_request_http_status_if_the_validation_fails() {
-            when(mockUserService.registerCustomer(any(RegisterCustomerRequest.class))).thenReturn(new RegisterCustomerResult.ValidationFails("Error message"));
+            RegisterCustomerRequest mockRequest = new RegisterCustomerRequest();
+            mockRequest.setEnglishName("Validation fails");
+            when(mockUserService.registerCustomer(mockRequest)).thenReturn(new RegisterCustomerResult.ValidationFails("Error message"));
 
-            ResponseEntity<RegisterCustomerResponse> actualResult = userController.registerCustomer(new RegisterCustomerRequest());
+            ResponseEntity<RegisterCustomerResponse> actualResult = userController.registerCustomer(mockRequest);
 
             RegisterCustomerResponse resBody = actualResult.getBody();
             assertFalse(resBody.isCreated());

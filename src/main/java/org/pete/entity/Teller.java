@@ -3,7 +3,7 @@ package org.pete.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -21,7 +21,7 @@ public class Teller {
     @Column(name = "PASSWORD", length = 20, nullable = false)
     private String password;
     @Column(name = "CREATION_DATE", nullable = false)
-    private Timestamp creationDate;
+    private LocalDateTime creationDate;
     @Column(name = "LAST_UPDATE_DATE", nullable = false)
-    private Timestamp lastUpdateDate;
+    private LocalDateTime lastUpdateDate;
 }

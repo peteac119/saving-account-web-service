@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -18,10 +18,11 @@ public class SavingAccount {
     @Column(name = "BALANCE", precision = 18, scale = 2, nullable = false)
     private BigDecimal balance;
     @Column(name = "CREATION_DATE", nullable = false)
-    private Timestamp creationDate;
+    private LocalDateTime creationDate;
     @Column(name = "LAST_UPDATE_DATE", nullable = false)
-    private Timestamp lastUpdateDate;
-    @ManyToOne
+    private LocalDateTime lastUpdateDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CUSTOMER_ID")
     private Customer customer;
 }

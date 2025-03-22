@@ -81,6 +81,11 @@ public class SavingAccountController {
     }
 
     @GetMapping
+    public ResponseEntity<?> findSavingAccount() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(path = "/history")
     public ResponseEntity<?> listTransactions() {
         return ResponseEntity.ok().build();
     }

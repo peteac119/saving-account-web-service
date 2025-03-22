@@ -100,22 +100,22 @@ public class UserService {
         return null;
     }
 
-    @Transactional(readOnly = true)
-    public CustomerLoginResult customerLogin(CustomerLoginRequest customerLoginRequest) {
-        Users currentUser = userRepository.findOneByEmail(customerLoginRequest.getEmail());
-
-        if (Objects.isNull(currentUser)) {
-            return new CustomerLoginResult.UserNotFound();
-        }
-
-        String inputPass = bCryptPasswordEncoder.encode(customerLoginRequest.getPassword());
-
-        if (!inputPass.equals(currentUser.getPassword())) {
-            return new CustomerLoginResult.WrongPassword();
-        }
-
-        currentUser.setLastLoginDate(LocalDateTime.now());
-
-        return new CustomerLoginResult.LoginSuccess();
-    }
+//    @Transactional(readOnly = true)
+//    public CustomerLoginResult customerLogin(CustomerLoginRequest customerLoginRequest) {
+//        Users currentUser = userRepository.findOneByEmail(customerLoginRequest.getEmail());
+//
+//        if (Objects.isNull(currentUser)) {
+//            return new CustomerLoginResult.UserNotFound();
+//        }
+//
+//        String inputPass = bCryptPasswordEncoder.encode(customerLoginRequest.getPassword());
+//
+//        if (!inputPass.equals(currentUser.getPassword())) {
+//            return new CustomerLoginResult.WrongPassword();
+//        }
+//
+//        currentUser.setLastLoginDate(LocalDateTime.now());
+//
+//        return new CustomerLoginResult.LoginSuccess();
+//    }
 }

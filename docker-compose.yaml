@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Start Postgres database
+  postgres:
+    image: postgres:17.4
+    container_name: postgresdb_17_4
+    environment:
+      POSTGRES_USER: peteadmin
+      POSTGRES_PASSWORD: somedbpass123
+      POSTGRES_DB: pete_comp
+    volumes:
+      - ./db_scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  # Start application
+  build-app:
+    build:
+      context: .
+    container_name: saving-account-web-service
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: pete_comp
+      DB_USERNAME: peteadmin
+      DB_PASSWORD: somedbpass123
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

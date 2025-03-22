@@ -28,8 +28,6 @@ public class Users {
     private String pinNum;
     @Column(name = "ROLE", length = 50, nullable = false)
     private String role;
-    @Column(name ="LAST_LOGIN_DATE")
-    private LocalDateTime lastLoginDate;
     @CreationTimestamp
     @Column(name = "CREATION_DATE", nullable = false)
     private LocalDateTime creationDate;

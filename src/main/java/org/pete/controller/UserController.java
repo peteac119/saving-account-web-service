@@ -1,9 +1,7 @@
 package org.pete.controller;
 
-import org.pete.model.request.CustomerLoginRequest;
 import org.pete.model.request.RegisterCustomerRequest;
 import org.pete.model.response.RegisterCustomerResponse;
-import org.pete.model.result.CustomerLoginResult;
 import org.pete.model.result.RegisterCustomerResult;
 import org.pete.service.UserService;
 import org.springframework.http.HttpStatus;

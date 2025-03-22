@@ -51,13 +51,15 @@ public class UserPrinciple implements UserDetails {
             return true;
         }
 
-        if (Objects.isNull(users.getLastLoginDate())) {
-            return false;
-        }
+        return true;
 
-        LocalDateTime expiredTime = users.getLastLoginDate().plusMinutes(30L);
-
-        return users.getLastLoginDate().isBefore(expiredTime);
+//        if (Objects.isNull(users.getLastLoginDate())) {
+//            return false;
+//        }
+//
+//        LocalDateTime expiredTime = users.getLastLoginDate().plusMinutes(30L);
+//
+//        return users.getLastLoginDate().isBefore(expiredTime);
     }
 
     public Users getUsers() {

@@ -6,7 +6,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.pete.constant.Role;
 import org.pete.entity.Users;
+import org.pete.model.request.CustomerLoginRequest;
 import org.pete.model.request.RegisterCustomerRequest;
+import org.pete.model.result.CustomerLoginResult;
 import org.pete.model.result.RegisterCustomerResult;
 import org.pete.repository.UserRepository;
 import org.pete.validator.UserInfoValidator;
@@ -21,7 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-// TODO Make the test support parallel test
 public class UsersServiceTest {
     private final UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
     private final UserInfoValidator mockUserInfoValidator = Mockito.mock(UserInfoValidator.class);
@@ -147,6 +148,51 @@ public class UsersServiceTest {
             assertEquals(mockCustomerRequest.getEnglishName().trim(), actualUsers.getEnglishName());
             assertEquals(mockCustomerRequest.getPinNum().trim(), actualUsers.getPinNum());
             assertEquals(List.of(Role.CUSTOMER).toString(), actualUsers.getRole());
+        }
+    }
+
+    @Nested
+    public class CustomerLoginTestSuite {
+        @Test
+        public void should_login_successfully() {
+            CustomerLoginRequest mockRequest = new CustomerLoginRequest("testEmail", "testPassword");
+            Users mockUsers = mockUser("testEmail", "testPassword");
+            when(mockUserRepository.findOneByEmail(mockRequest.getEmail())).thenReturn(mockUsers);
+            when(mockBCryptPasswordEncoder.matches(mockUsers.getPassword(), mockRequest.getPassword())).thenReturn(true);
+
+            CustomerLoginResult actualResult = userService.customerLogin(mockRequest);
+
+            assertThat(actualResult, instanceOf(CustomerLoginResult.LoginSuccess.class));
+        }
+
+        @Test
+        public void should_login_fails_if_user_is_not_found() {
+            CustomerLoginRequest mockRequest = new CustomerLoginRequest("testEmail", "testPassword");
+            when(mockUserRepository.findOneByEmail(mockRequest.getEmail())).thenReturn(null);
+
+            CustomerLoginResult actualResult = userService.customerLogin(mockRequest);
+
+            assertThat(actualResult, instanceOf(CustomerLoginResult.UserNotFound.class));
+        }
+
+        @Test
+        public void should_login_fails_if_password_is_wrong() {
+            CustomerLoginRequest mockRequest = new CustomerLoginRequest("testEmail", "testPassword");
+            Users mockUsers = mockUser("testEmail", "wrongPassword");
+            when(mockUserRepository.findOneByEmail(mockRequest.getEmail())).thenReturn(mockUsers);
+            when(mockBCryptPasswordEncoder.matches(mockUsers.getPassword(), mockRequest.getPassword())).thenReturn(false);
+
+            CustomerLoginResult actualResult = userService.customerLogin(mockRequest);
+
+            assertThat(actualResult, instanceOf(CustomerLoginResult.WrongPassword.class));
+        }
+
+        private Users mockUser(String email, String password) {
+            Users users = new Users();
+            users.setEmail(email);
+            users.setPassword(password);
+
+            return users;
         }
     }
 

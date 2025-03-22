@@ -7,6 +7,7 @@ import org.pete.constant.Channel;
 import org.pete.constant.TransactionAction;
 import org.pete.entity.SavingAccounts;
 import org.pete.entity.TransactionAuditLog;
+import org.pete.repository.SavingAccountRepository;
 import org.pete.repository.TransactionAuditLogRepository;
 
 import java.math.BigDecimal;
@@ -19,7 +20,8 @@ import static org.mockito.Mockito.*;
 class TransactionAuditLogServiceTest {
 
     private final TransactionAuditLogRepository mockRepository = Mockito.mock(TransactionAuditLogRepository.class);
-    private final TransactionAuditLogService service = new TransactionAuditLogService(mockRepository);
+    private final SavingAccountRepository mockSavingAccountRepository = Mockito.mock(SavingAccountRepository.class);
+    private final TransactionAuditLogService service = new TransactionAuditLogService(mockRepository, mockSavingAccountRepository);
 
     @Test
     public void should_log_with_positive_amount_when_action_is_deposit() {

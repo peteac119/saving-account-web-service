@@ -3,8 +3,10 @@ package org.pete.controller;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.pete.model.request.CustomerLoginRequest;
 import org.pete.model.request.RegisterCustomerRequest;
 import org.pete.model.response.RegisterCustomerResponse;
+import org.pete.model.result.CustomerLoginResult;
 import org.pete.model.result.RegisterCustomerResult;
 import org.pete.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -61,6 +63,39 @@ public class UsersControllerTest {
             assertFalse(resBody.isCreated());
             assertEquals("Error message", resBody.errorMessage());
             assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
+        }
+    }
+
+    @Nested
+    public class CustomerLoginTestSuite {
+        @Test
+        public void should_return_ok_status_after_login_successfully() {
+            CustomerLoginRequest mockRequest = new CustomerLoginRequest("testEmail", "testPassword");
+            when(mockUserService.customerLogin(mockRequest)).thenReturn(new CustomerLoginResult.LoginSuccess());
+
+            ResponseEntity<?> actualResponse = userController.customerLogin(mockRequest);
+
+            assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+        }
+
+        @Test
+        public void should_return_forbidden_status_if_password_is_wrong() {
+            CustomerLoginRequest mockRequest = new CustomerLoginRequest("testEmail", "testPassword");
+            when(mockUserService.customerLogin(mockRequest)).thenReturn(new CustomerLoginResult.WrongPassword());
+
+            ResponseEntity<?> actualResponse = userController.customerLogin(mockRequest);
+
+            assertEquals(HttpStatus.FORBIDDEN, actualResponse.getStatusCode());
+        }
+
+        @Test
+        public void should_return_not_found_status_if_the_user_is_not_found() {
+            CustomerLoginRequest mockRequest = new CustomerLoginRequest("testEmail", "testPassword");
+            when(mockUserService.customerLogin(mockRequest)).thenReturn(new CustomerLoginResult.UserNotFound());
+
+            ResponseEntity<?> actualResponse = userController.customerLogin(mockRequest);
+
+            assertEquals(HttpStatus.NOT_FOUND, actualResponse.getStatusCode());
         }
     }
 }

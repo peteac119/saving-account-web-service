@@ -9,19 +9,25 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "TELLER")
-public class Teller {
+@Table(name = "USERS")
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "FIRST_NAME", length = 50, nullable = false)
-    private String firstName;
-    @Column(name = "LAST_NAME", length = 50, nullable = false)
-    private String lastName;
-    @Column(name = "USERNAME", length = 20, nullable = false)
-    private String username;
+    @Column(name = "THAI_NAME", length = 100, nullable = false)
+    private String thaiName;
+    @Column(name = "ENGLISH_NAME", length = 100, nullable = false)
+    private String englishName;
+    @Column(name = "EMAIL", length = 100, nullable = false)
+    private String email;
     @Column(name = "PASSWORD", length = 20, nullable = false)
     private String password;
+    @Column(name = "CITIZEN_ID", length = 13, nullable = false)
+    private String citizenId;
+    @Column(name = "PIN_NUM", length = 6)
+    private String pinNum;
+    @Column(name = "ROLE", length = 50, nullable = false)
+    private String role;
     @CreationTimestamp
     @Column(name = "CREATION_DATE", nullable = false)
     private LocalDateTime creationDate;

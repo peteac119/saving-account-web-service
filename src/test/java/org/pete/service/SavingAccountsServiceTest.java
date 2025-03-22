@@ -4,13 +4,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.pete.entity.Customer;
-import org.pete.entity.SavingAccount;
+import org.pete.entity.Users;
+import org.pete.entity.SavingAccounts;
 import org.pete.model.request.CreateSavingAccountRequest;
 import org.pete.model.request.DepositRequest;
 import org.pete.model.result.CreateSavingAccountResult;
 import org.pete.model.result.DepositResult;
-import org.pete.repository.CustomerRepository;
+import org.pete.repository.UserRepository;
 import org.pete.repository.SavingAccountRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -23,36 +23,36 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class SavingAccountServiceTest {
+public class SavingAccountsServiceTest {
 
     private final SavingAccountRepository mockSavingAccountRepository = Mockito.mock(SavingAccountRepository.class);
-    private final CustomerRepository mockCustomerRepository = Mockito.mock(CustomerRepository.class);
+    private final UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
     private final BCryptPasswordEncoder mockBCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
     private final SavingAccountService savingAccountService = new SavingAccountService(
             mockSavingAccountRepository,
-            mockCustomerRepository,
+            mockUserRepository,
             mockBCryptPasswordEncoder
     );
 
     @Nested
-    public class CreateSavingAccountTestSuite {
+    public class CreateSavingAccountsTestSuite {
         @Test
         public void should_create_account_with_deposit_amount_successfully() {
-            ArgumentCaptor<SavingAccount> savingAccountArgumentCaptor = ArgumentCaptor.forClass(SavingAccount.class);
+            ArgumentCaptor<SavingAccounts> savingAccountArgumentCaptor = ArgumentCaptor.forClass(SavingAccounts.class);
             CreateSavingAccountRequest mockRequest = new CreateSavingAccountRequest(
                     "ชื่อภาษาไทย",
                     "testEnglishNameSuccess",
                     "2235485123123",
                     BigDecimal.TEN
             );
-            Customer mockCustomer = new Customer();
+            Users mockUsers = new Users();
             Long mockAccountNumber = 1000000L;
-            when(mockCustomerRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
+            when(mockUserRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
                     mockRequest.getThaiName(),
                     mockRequest.getEnglishName(),
                     mockRequest.getCitizenId()
-            )).thenReturn(mockCustomer);
-            when(mockSavingAccountRepository.save(any(SavingAccount.class))).thenAnswer(input -> input.getArguments()[0]);
+            )).thenReturn(mockUsers);
+            when(mockSavingAccountRepository.save(any(SavingAccounts.class))).thenAnswer(input -> input.getArguments()[0]);
             when(mockSavingAccountRepository.nextAccountNumber()).thenReturn(mockAccountNumber);
 
             CreateSavingAccountResult actualResult = savingAccountService.createSavingAccount(mockRequest);
@@ -62,26 +62,26 @@ public class SavingAccountServiceTest {
             assertEquals(Long.toString(mockAccountNumber), successResult.getAccountNumber());
             assertEquals(mockRequest.getDepositAmount(), successResult.getCurrentBalance());
             verify(mockSavingAccountRepository, times(1)).save(savingAccountArgumentCaptor.capture());
-            assertSavingAccountInfo(mockRequest, savingAccountArgumentCaptor.getValue(), mockAccountNumber, mockCustomer);
+            assertSavingAccountInfo(mockRequest, savingAccountArgumentCaptor.getValue(), mockAccountNumber, mockUsers);
         }
 
         @Test
         public void should_create_account_with_initial_amount_successfully() {
-            ArgumentCaptor<SavingAccount> savingAccountArgumentCaptor = ArgumentCaptor.forClass(SavingAccount.class);
+            ArgumentCaptor<SavingAccounts> savingAccountArgumentCaptor = ArgumentCaptor.forClass(SavingAccounts.class);
             CreateSavingAccountRequest mockRequest = new CreateSavingAccountRequest(
                     "ชื่อภาษาไทย",
                     "testEnglishNameSuccess",
                     "2235485123123",
                     null
             );
-            Customer mockCustomer = new Customer();
+            Users mockUsers = new Users();
             Long mockAccountNumber = 1000000L;
-            when(mockCustomerRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
+            when(mockUserRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
                     mockRequest.getThaiName(),
                     mockRequest.getEnglishName(),
                     mockRequest.getCitizenId()
-            )).thenReturn(mockCustomer);
-            when(mockSavingAccountRepository.save(any(SavingAccount.class))).thenAnswer(input -> input.getArguments()[0]);
+            )).thenReturn(mockUsers);
+            when(mockSavingAccountRepository.save(any(SavingAccounts.class))).thenAnswer(input -> input.getArguments()[0]);
             when(mockSavingAccountRepository.nextAccountNumber()).thenReturn(mockAccountNumber);
 
             CreateSavingAccountResult actualResult = savingAccountService.createSavingAccount(mockRequest);
@@ -91,7 +91,7 @@ public class SavingAccountServiceTest {
             assertEquals(Long.toString(mockAccountNumber), successResult.getAccountNumber());
             assertEquals(BigDecimal.ZERO, successResult.getCurrentBalance());
             verify(mockSavingAccountRepository, times(1)).save(savingAccountArgumentCaptor.capture());
-            assertSavingAccountInfo(mockRequest, savingAccountArgumentCaptor.getValue(), mockAccountNumber, mockCustomer);
+            assertSavingAccountInfo(mockRequest, savingAccountArgumentCaptor.getValue(), mockAccountNumber, mockUsers);
         }
 
         @Test
@@ -102,7 +102,7 @@ public class SavingAccountServiceTest {
                     "2235485155248",
                     BigDecimal.TEN
             );;
-            when(mockCustomerRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
+            when(mockUserRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
                     mockRequest.getThaiName(),
                     mockRequest.getEnglishName(),
                     mockRequest.getCitizenId()
@@ -111,17 +111,17 @@ public class SavingAccountServiceTest {
             CreateSavingAccountResult actualResult = savingAccountService.createSavingAccount(mockRequest);
 
             assertThat(actualResult, instanceOf(CreateSavingAccountResult.CustNotFound.class));
-            verify(mockSavingAccountRepository, times(0)).save(any(SavingAccount.class));
+            verify(mockSavingAccountRepository, times(0)).save(any(SavingAccounts.class));
         }
 
         private void assertSavingAccountInfo(CreateSavingAccountRequest mockRequest,
-                                             SavingAccount savingAccount,
+                                             SavingAccounts savingAccounts,
                                              Long mockAccountNumber,
-                                             Customer mockCustomer) {
+                                             Users mockUsers) {
             BigDecimal expectedBalance = Optional.ofNullable(mockRequest.getDepositAmount()).orElse(BigDecimal.ZERO);
-            assertEquals(expectedBalance, savingAccount.getBalance());
-            assertEquals(mockAccountNumber.toString(), savingAccount.getAccountNumber());
-            assertEquals(mockCustomer, savingAccount.getCustomer());
+            assertEquals(expectedBalance, savingAccounts.getBalance());
+            assertEquals(mockAccountNumber.toString(), savingAccounts.getAccountNumber());
+            assertEquals(mockUsers, savingAccounts.getUsers());
         }
     }
 
@@ -130,17 +130,17 @@ public class SavingAccountServiceTest {
         @Test
         public void should_deposit_with_specific_amount_successfully() {
             DepositRequest mockRequest = new DepositRequest(BigDecimal.valueOf(500.25), "2254487");
-            SavingAccount mockSavingAccount = new SavingAccount();
-            mockSavingAccount.setAccountNumber(mockRequest.getAccountNumber());
-            mockSavingAccount.setBalance(BigDecimal.TEN);
-            when(mockSavingAccountRepository.findOneByAccountNumber(mockRequest.getAccountNumber())).thenReturn(mockSavingAccount);
+            SavingAccounts mockSavingAccounts = new SavingAccounts();
+            mockSavingAccounts.setAccountNumber(mockRequest.getAccountNumber());
+            mockSavingAccounts.setBalance(BigDecimal.TEN);
+            when(mockSavingAccountRepository.findOneByAccountNumber(mockRequest.getAccountNumber())).thenReturn(mockSavingAccounts);
 
             DepositResult actualResult = savingAccountService.deposit(mockRequest);
 
             assertThat(actualResult, instanceOf(DepositResult.Success.class));
             DepositResult.Success successResult = (DepositResult.Success) actualResult;
             assertEquals(mockRequest.getAccountNumber(), successResult.getAccountNumber());
-            assertEquals(mockSavingAccount.getBalance(), successResult.getNewBalance());
+            assertEquals(mockSavingAccounts.getBalance(), successResult.getNewBalance());
         }
 
         @Test
@@ -156,10 +156,10 @@ public class SavingAccountServiceTest {
         @Test
         public void should_not_deposit_if_the_deposit_amount_is_less_than_one() {
             DepositRequest mockRequest = new DepositRequest(BigDecimal.ZERO, "5524867");
-            SavingAccount mockSavingAccount = new SavingAccount();
-            mockSavingAccount.setAccountNumber(mockRequest.getAccountNumber());
-            mockSavingAccount.setBalance(BigDecimal.ONE);
-            when(mockSavingAccountRepository.findOneByAccountNumber(mockRequest.getAccountNumber())).thenReturn(mockSavingAccount);
+            SavingAccounts mockSavingAccounts = new SavingAccounts();
+            mockSavingAccounts.setAccountNumber(mockRequest.getAccountNumber());
+            mockSavingAccounts.setBalance(BigDecimal.ONE);
+            when(mockSavingAccountRepository.findOneByAccountNumber(mockRequest.getAccountNumber())).thenReturn(mockSavingAccounts);
 
             DepositResult actualResult = savingAccountService.deposit(mockRequest);
 

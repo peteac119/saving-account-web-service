@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "SAVING_ACCOUNT")
-public class SavingAccount {
+@Table(name = "SAVING_ACCOUNTS")
+public class SavingAccounts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,6 +27,6 @@ public class SavingAccount {
     private LocalDateTime lastUpdateDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CUSTOMER_ID")
-    private Customer customer;
+    @JoinColumn(name = "USER_ID")
+    private Users users;
 }

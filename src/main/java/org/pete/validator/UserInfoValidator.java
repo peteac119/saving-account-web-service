@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 @Component
-public class CustomerInfoValidator {
+public class UserInfoValidator {
 
     private static final int MAX_LENGTH = 100;
     private final Pattern pinNumberPattern = Pattern.compile("^\\d{6}$");

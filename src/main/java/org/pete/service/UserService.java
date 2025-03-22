@@ -1,29 +1,28 @@
 package org.pete.service;
 
-import org.pete.entity.Customer;
+import org.pete.entity.Users;
 import org.pete.model.request.RegisterCustomerRequest;
 import org.pete.model.result.RegisterCustomerResult;
-import org.pete.repository.CustomerRepository;
-import org.pete.validator.CustomerInfoValidator;
+import org.pete.repository.UserRepository;
+import org.pete.validator.UserInfoValidator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Service
-public class CustomerService {
+public class UserService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final CustomerRepository customerRepository;
-    private final CustomerInfoValidator customerInfoValidator;
+    private final UserRepository userRepository;
+    private final UserInfoValidator userInfoValidator;
 
-    public CustomerService(CustomerRepository customerRepository,
-                           CustomerInfoValidator customerInfoValidator,
-                           BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.customerRepository = customerRepository;
-        this.customerInfoValidator = customerInfoValidator;
+    public UserService(UserRepository userRepository,
+                       UserInfoValidator userInfoValidator,
+                       BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userRepository = userRepository;
+        this.userInfoValidator = userInfoValidator;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -37,60 +36,58 @@ public class CustomerService {
 
         String email = registerCustomerRequest.getEmail().trim();
         String citizenId = registerCustomerRequest.getCitizenId().trim();
-        Customer customer = customerRepository.findOneByEmailOrCitizenId(email, citizenId);
+        Users users = userRepository.findOneByEmailOrCitizenId(email, citizenId);
 
-        if (Objects.nonNull(customer)) {
+        if (Objects.nonNull(users)) {
             return new RegisterCustomerResult.CustAlreadyExists();
         }
 
-        customer = mapNewCustomer(registerCustomerRequest);
+        users = mapNewCustomer(registerCustomerRequest);
 
-        customerRepository.save(customer);
+        userRepository.save(users);
 
         return new RegisterCustomerResult.Success();
     }
 
-    private Customer mapNewCustomer(RegisterCustomerRequest registerCustomerRequest) {
+    private Users mapNewCustomer(RegisterCustomerRequest registerCustomerRequest) {
         String password = registerCustomerRequest.getPassword();
         String pinNumber = registerCustomerRequest.getPinNum().trim();
 
-        Customer customer = new Customer();
-        customer.setThaiName(registerCustomerRequest.getThaiName().trim());
-        customer.setEnglishName(registerCustomerRequest.getEnglishName().trim());
-        customer.setEmail(registerCustomerRequest.getEmail().trim());
-        customer.setCitizenId(registerCustomerRequest.getCitizenId().trim());
-//        customer.setCreationDate(LocalDateTime.now());
-//        customer.setLastUpdateDate(LocalDateTime.now());
+        Users users = new Users();
+        users.setThaiName(registerCustomerRequest.getThaiName().trim());
+        users.setEnglishName(registerCustomerRequest.getEnglishName().trim());
+        users.setEmail(registerCustomerRequest.getEmail().trim());
+        users.setCitizenId(registerCustomerRequest.getCitizenId().trim());
 
-        customer.setPassword(bCryptPasswordEncoder.encode(password));
-        customer.setPinNum(bCryptPasswordEncoder.encode(pinNumber));
+        users.setPassword(bCryptPasswordEncoder.encode(password));
+        users.setPinNum(bCryptPasswordEncoder.encode(pinNumber));
 
-        return customer;
+        return users;
     }
 
     private RegisterCustomerResult validateCustomerInfo(RegisterCustomerRequest registerCustomerRequest) {
         String citizenId = registerCustomerRequest.getCitizenId();
-        if (!customerInfoValidator.validateCitizenId(citizenId)) {
+        if (!userInfoValidator.validateCitizenId(citizenId)) {
             return new RegisterCustomerResult.ValidationFails("Citizen Id is not in the correct format.");
         }
 
         String email = registerCustomerRequest.getEmail();
-        if (!customerInfoValidator.validateEmail(email)) {
+        if (!userInfoValidator.validateEmail(email)) {
             return new RegisterCustomerResult.ValidationFails("Email is not in the correct format.");
         }
 
         String thaiName = registerCustomerRequest.getThaiName();
-        if (!customerInfoValidator.validateName(thaiName)) {
+        if (!userInfoValidator.validateName(thaiName)) {
             return new RegisterCustomerResult.ValidationFails("Thai name is not in the correct format.");
         }
 
         String englishName = registerCustomerRequest.getEnglishName();
-        if (!customerInfoValidator.validateName(englishName)) {
+        if (!userInfoValidator.validateName(englishName)) {
             return new RegisterCustomerResult.ValidationFails("English name is not in the correct format.");
         }
 
         String pinNumber = registerCustomerRequest.getPinNum();
-        if (!customerInfoValidator.validatePinNumber(pinNumber)) {
+        if (!userInfoValidator.validatePinNumber(pinNumber)) {
             return new RegisterCustomerResult.ValidationFails("PIN number is not in the correct format.");
         }
 

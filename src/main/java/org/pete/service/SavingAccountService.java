@@ -1,13 +1,13 @@
 package org.pete.service;
 
-import org.pete.entity.Customer;
-import org.pete.entity.SavingAccount;
+import org.pete.entity.Users;
+import org.pete.entity.SavingAccounts;
 import org.pete.model.request.CreateSavingAccountRequest;
 import org.pete.model.request.DepositRequest;
 import org.pete.model.request.TransferRequest;
 import org.pete.model.result.CreateSavingAccountResult;
 import org.pete.model.result.DepositResult;
-import org.pete.repository.CustomerRepository;
+import org.pete.repository.UserRepository;
 import org.pete.repository.SavingAccountRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,50 +21,50 @@ import java.util.Objects;
 public class SavingAccountService {
 
     private final SavingAccountRepository savingAccountRepository;
-    private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public SavingAccountService(SavingAccountRepository savingAccountRepository,
-                                CustomerRepository customerRepository,
+                                UserRepository userRepository,
                                 BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.savingAccountRepository = savingAccountRepository;
-        this.customerRepository = customerRepository;
+        this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Transactional
     public CreateSavingAccountResult createSavingAccount(CreateSavingAccountRequest request) {
-        Customer customer = customerRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
+        Users users = userRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
                 request.getThaiName(),
                 request.getEnglishName(),
                 request.getCitizenId()
         );
 
-        if (Objects.isNull(customer)) {
+        if (Objects.isNull(users)) {
             return new CreateSavingAccountResult.CustNotFound();
         }
 
-        SavingAccount savingAccount = createNewAccount(customer, request);
-        savingAccountRepository.save(savingAccount);
+        SavingAccounts savingAccounts = createNewAccount(users, request);
+        savingAccountRepository.save(savingAccounts);
 
-        return new CreateSavingAccountResult.Success(savingAccount.getAccountNumber(), savingAccount.getBalance());
+        return new CreateSavingAccountResult.Success(savingAccounts.getAccountNumber(), savingAccounts.getBalance());
     }
 
-    private SavingAccount createNewAccount(Customer customer, CreateSavingAccountRequest request) {
+    private SavingAccounts createNewAccount(Users users, CreateSavingAccountRequest request) {
         Long newAccountNumber = savingAccountRepository.nextAccountNumber();
         BigDecimal depositAmount = request.getDepositAmount();
 
-        SavingAccount savingAccount = new SavingAccount();
-        savingAccount.setAccountNumber(generateAccountNumber(newAccountNumber));
-        savingAccount.setCustomer(customer);
+        SavingAccounts savingAccounts = new SavingAccounts();
+        savingAccounts.setAccountNumber(generateAccountNumber(newAccountNumber));
+        savingAccounts.setUsers(users);
 
         if (Objects.nonNull(depositAmount)) {
-            savingAccount.setBalance(depositAmount);
+            savingAccounts.setBalance(depositAmount);
         } else {
-            savingAccount.setBalance(BigDecimal.ZERO);
+            savingAccounts.setBalance(BigDecimal.ZERO);
         }
 
-        return savingAccount;
+        return savingAccounts;
     }
 
     private String generateAccountNumber(Long newId) {
@@ -73,9 +73,9 @@ public class SavingAccountService {
 
     @Transactional
     public DepositResult deposit(DepositRequest request) {
-        SavingAccount savingAccount = savingAccountRepository.findOneByAccountNumber(request.getAccountNumber());
+        SavingAccounts savingAccounts = savingAccountRepository.findOneByAccountNumber(request.getAccountNumber());
 
-        if (Objects.isNull(savingAccount)) {
+        if (Objects.isNull(savingAccounts)) {
             return new DepositResult.SavingAccountNotFound();
         }
 
@@ -85,10 +85,10 @@ public class SavingAccountService {
             return new DepositResult.DepositAmountIsLessThanOne();
         }
 
-        BigDecimal currentBalance = savingAccount.getBalance();
-        savingAccount.setBalance(currentBalance.add(depositAmount));
+        BigDecimal currentBalance = savingAccounts.getBalance();
+        savingAccounts.setBalance(currentBalance.add(depositAmount));
 
-        return new DepositResult.Success(savingAccount.getAccountNumber(), savingAccount.getBalance());
+        return new DepositResult.Success(savingAccounts.getAccountNumber(), savingAccounts.getBalance());
     }
 
     private boolean depositAmountIsLessThanOne(BigDecimal depositAmount) {
@@ -98,8 +98,8 @@ public class SavingAccountService {
     @Transactional
     public void transfer(TransferRequest request, Long senderId) {
         // TODO Need to make sure that the user is really a sender.
-        SavingAccount senderAccount = savingAccountRepository.findOneByAccountNumber(request.getSenderAccountNum());
-        SavingAccount beneficiaryAccount = savingAccountRepository.findOneByAccountNumber(request.getBeneficiaryAccountNum());
+        SavingAccounts senderAccount = savingAccountRepository.findOneByAccountNumber(request.getSenderAccountNum());
+        SavingAccounts beneficiaryAccount = savingAccountRepository.findOneByAccountNumber(request.getBeneficiaryAccountNum());
 
         if (Objects.isNull(senderAccount) || Objects.isNull(beneficiaryAccount)) {
             return;
@@ -109,7 +109,7 @@ public class SavingAccountService {
             return;
         }
 
-        Customer sender = senderAccount.getCustomer();
+        Users sender = senderAccount.getUsers();
         String pinNumber = request.getPinNumber();
         if (pinNumberIsNotTheSame(pinNumber, sender.getPinNum())) {
             return;
@@ -136,7 +136,7 @@ public class SavingAccountService {
         return originalPinNum.equals(bCryptPasswordEncoder.encode(pinNumber));
     }
 
-    private boolean senderBalanceIsLessThanTransferAmount(BigDecimal transferAmount, SavingAccount senderAccount) {
+    private boolean senderBalanceIsLessThanTransferAmount(BigDecimal transferAmount, SavingAccounts senderAccount) {
         return senderAccount.getBalance().compareTo(transferAmount) < 0;
     }
 
@@ -146,9 +146,9 @@ public class SavingAccountService {
 
     @Transactional(readOnly = true)
     public void findSavingAccount(Long customerId) {
-        List<SavingAccount> savingAccountList = savingAccountRepository.findByCustomerId(customerId);
+        List<SavingAccounts> savingAccountsList = savingAccountRepository.findByCustomerId(customerId);
 
-        if (Objects.isNull(savingAccountList) || savingAccountList.isEmpty()) {
+        if (Objects.isNull(savingAccountsList) || savingAccountsList.isEmpty()) {
             return;
         }
 

@@ -18,13 +18,13 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-public class SavingAccountControllerTest {
+public class SavingAccountsControllerTest {
 
     private final SavingAccountService mockSavingAccountService = Mockito.mock(SavingAccountService.class);
     private final SavingAccountController savingAccountController = new SavingAccountController(mockSavingAccountService);
 
     @Nested
-    public class CreateSavingAccountTestSuite {
+    public class CreateSavingAccountsTestSuite {
         @Test
         public void should_return_created_http_status_when_saving_account_is_created_successfully() {
             CreateSavingAccountRequest mockRequest = new CreateSavingAccountRequest();

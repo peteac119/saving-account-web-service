@@ -30,7 +30,7 @@ public class UserPrinciple implements UserDetails {
         String[] roleList = roleStr.split(",");
 
         return Arrays.stream(roleList)
-                .map(SimpleGrantedAuthority::new)
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .toList();
     }
 

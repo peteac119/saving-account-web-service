@@ -30,7 +30,7 @@ public class SavingAccountController {
     }
 
     @PostMapping("/create")
-//    @PreAuthorize("hasRole('TELLER')")
+    @PreAuthorize("hasRole('TELLER')")
     public ResponseEntity<CreateSavingAccountResponse> createSavingAccount(@RequestBody CreateSavingAccountRequest request) {
         CreateSavingAccountResult result = savingAccountService.createSavingAccount(request);
         return switch(result) {
@@ -55,7 +55,7 @@ public class SavingAccountController {
     }
 
     @PostMapping(path = "/deposit")
-//    @PreAuthorize("hasRole('TELLER')")
+    @PreAuthorize("hasRole('TELLER')")
     public ResponseEntity<DepositResponse> deposit(@RequestBody DepositRequest depositRequest) {
         DepositResult result = savingAccountService.deposit(depositRequest);
         return switch (result) {
@@ -86,7 +86,7 @@ public class SavingAccountController {
     }
 
     @PostMapping(path = "/transfer")
-//    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<TransferResponse> transfer(@RequestBody TransferRequest transferRequest, Authentication authentication) {
         if (Objects.isNull(authentication) || !(authentication.getPrincipal() instanceof UserPrinciple)) {
             return ResponseEntity.unprocessableEntity().build();

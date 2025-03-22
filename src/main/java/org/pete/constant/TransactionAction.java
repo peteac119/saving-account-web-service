@@ -1,5 +1,8 @@
 package org.pete.constant;
 
+import lombok.Getter;
+
+@Getter
 public enum TransactionAction {
     DEPOSIT("DP"), TRANSFER("TF");
 
@@ -7,9 +10,5 @@ public enum TransactionAction {
 
     TransactionAction(String code) {
         this.code = code;
-    }
-
-    public String getCode() {
-        return code;
     }
 }

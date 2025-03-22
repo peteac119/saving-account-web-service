@@ -1,5 +1,8 @@
 package org.pete.constant;
 
+import lombok.Getter;
+
+@Getter
 public enum Channel {
     TELLER("OTC"), CUSTOMER("ATS");
 
@@ -7,9 +10,5 @@ public enum Channel {
 
     Channel(String code) {
         this.code = code;
-    }
-
-    public String getCode() {
-        return this.code;
     }
 }

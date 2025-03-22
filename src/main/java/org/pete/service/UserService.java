@@ -2,9 +2,7 @@ package org.pete.service;
 
 import org.pete.constant.Role;
 import org.pete.entity.Users;
-import org.pete.model.request.CustomerLoginRequest;
 import org.pete.model.request.RegisterCustomerRequest;
-import org.pete.model.result.CustomerLoginResult;
 import org.pete.model.result.RegisterCustomerResult;
 import org.pete.repository.UserRepository;
 import org.pete.validator.UserInfoValidator;
@@ -12,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 

@@ -1,5 +1,7 @@
 package org.pete.service;
 
+import org.pete.constant.Channel;
+import org.pete.constant.TransactionAction;
 import org.pete.entity.Users;
 import org.pete.entity.SavingAccounts;
 import org.pete.model.request.CreateSavingAccountRequest;
@@ -24,10 +26,13 @@ public class SavingAccountService {
     private final SavingAccountRepository savingAccountRepository;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final TransactionAuditLogService transactionAuditLogService;
 
     public SavingAccountService(SavingAccountRepository savingAccountRepository,
                                 UserRepository userRepository,
+                                TransactionAuditLogService transactionAuditLogService,
                                 BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.transactionAuditLogService = transactionAuditLogService;
         this.savingAccountRepository = savingAccountRepository;
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -47,6 +52,14 @@ public class SavingAccountService {
 
         SavingAccounts savingAccounts = createNewAccount(users, request);
         savingAccountRepository.save(savingAccounts);
+
+        transactionAuditLogService.logTransaction(
+                savingAccounts,
+                TransactionAction.DEPOSIT,
+                Channel.TELLER,
+                savingAccounts.getBalance(),
+                request.getDepositAmount(),
+                "This account is created by Teller.");
 
         return new CreateSavingAccountResult.Success(savingAccounts.getAccountNumber(), savingAccounts.getBalance());
     }
@@ -89,6 +102,14 @@ public class SavingAccountService {
         BigDecimal currentBalance = savingAccounts.getBalance();
         savingAccounts.setBalance(currentBalance.add(depositAmount));
 
+        transactionAuditLogService.logTransaction(
+                savingAccounts,
+                TransactionAction.DEPOSIT,
+                Channel.TELLER,
+                savingAccounts.getBalance(),
+                request.getDepositAmount(),
+                "Deposit via Teller");
+
         return new DepositResult.Success(savingAccounts.getAccountNumber(), savingAccounts.getBalance());
     }
 
@@ -113,6 +134,22 @@ public class SavingAccountService {
 
         senderAccount.setBalance(newSenderBalance);
         beneficiaryAccount.setBalance(newBeneficiaryBalance);
+
+        transactionAuditLogService.logTransaction(
+                senderAccount,
+                TransactionAction.TRANSFER,
+                Channel.CUSTOMER,
+                senderAccount.getBalance(),
+                transferAmount,
+                "Transfer to " + beneficiaryAccount.getAccountNumber());
+
+        transactionAuditLogService.logTransaction(
+                beneficiaryAccount,
+                TransactionAction.DEPOSIT,
+                Channel.CUSTOMER,
+                beneficiaryAccount.getBalance(),
+                transferAmount,
+                "Receive transfer from " + senderAccount.getAccountNumber());
 
         return new TransferResult.Success(
                 senderAccount.getAccountNumber(),

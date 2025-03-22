@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.pete.constant.Channel;
+import org.pete.constant.TransactionAction;
 import org.pete.entity.Users;
 import org.pete.entity.SavingAccounts;
 import org.pete.model.request.CreateSavingAccountRequest;
@@ -31,9 +33,11 @@ public class SavingAccountsServiceTest {
     private final SavingAccountRepository mockSavingAccountRepository = Mockito.mock(SavingAccountRepository.class);
     private final UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
     private final BCryptPasswordEncoder mockBCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
+    private final TransactionAuditLogService mockTransactionAuditLogService = Mockito.mock(TransactionAuditLogService.class);
     private final SavingAccountService savingAccountService = new SavingAccountService(
             mockSavingAccountRepository,
             mockUserRepository,
+            mockTransactionAuditLogService,
             mockBCryptPasswordEncoder
     );
 
@@ -66,6 +70,14 @@ public class SavingAccountsServiceTest {
             assertEquals(mockRequest.getDepositAmount(), successResult.getCurrentBalance());
             verify(mockSavingAccountRepository, times(1)).save(savingAccountArgumentCaptor.capture());
             assertSavingAccountInfo(mockRequest, savingAccountArgumentCaptor.getValue(), mockAccountNumber, mockUsers);
+            verify(mockTransactionAuditLogService, times(1)).logTransaction(
+                    savingAccountArgumentCaptor.getValue(),
+                    TransactionAction.DEPOSIT,
+                    Channel.TELLER,
+                    savingAccountArgumentCaptor.getValue().getBalance(),
+                    mockRequest.getDepositAmount(),
+                    "This account is created by Teller."
+            );
         }
 
         @Test
@@ -95,6 +107,14 @@ public class SavingAccountsServiceTest {
             assertEquals(BigDecimal.ZERO, successResult.getCurrentBalance());
             verify(mockSavingAccountRepository, times(1)).save(savingAccountArgumentCaptor.capture());
             assertSavingAccountInfo(mockRequest, savingAccountArgumentCaptor.getValue(), mockAccountNumber, mockUsers);
+            verify(mockTransactionAuditLogService, times(1)).logTransaction(
+                    savingAccountArgumentCaptor.getValue(),
+                    TransactionAction.DEPOSIT,
+                    Channel.TELLER,
+                    savingAccountArgumentCaptor.getValue().getBalance(),
+                    mockRequest.getDepositAmount(),
+                    "This account is created by Teller."
+            );
         }
 
         @Test
@@ -144,6 +164,14 @@ public class SavingAccountsServiceTest {
             DepositResult.Success successResult = (DepositResult.Success) actualResult;
             assertEquals(mockRequest.getAccountNumber(), successResult.getAccountNumber());
             assertEquals(mockSavingAccounts.getBalance(), successResult.getNewBalance());
+            verify(mockTransactionAuditLogService, times(1)).logTransaction(
+                    mockSavingAccounts,
+                    TransactionAction.DEPOSIT,
+                    Channel.TELLER,
+                    mockSavingAccounts.getBalance(),
+                    mockRequest.getDepositAmount(),
+                    "Deposit via Teller"
+            );
         }
 
         @Test
@@ -199,6 +227,22 @@ public class SavingAccountsServiceTest {
             assertEquals(mockBeneficiaryAccount.getAccountNumber(), successResult.getBeneficiaryAccountNumber());
             assertEquals(originalSenderBalance.subtract(mockTransferAmount), successResult.getCurrentSenderBalance());
             assertEquals(originalBeneficiaryBalance.add(mockTransferAmount), successResult.getCurrentBeneficiaryBalance());
+            verify(mockTransactionAuditLogService, times(1)).logTransaction(
+                    mockSenderAccount,
+                    TransactionAction.TRANSFER,
+                    Channel.CUSTOMER,
+                    mockSenderAccount.getBalance(),
+                    mockTransferAmount,
+                    "Transfer to " + mockBeneficiaryAccount.getAccountNumber()
+            );
+            verify(mockTransactionAuditLogService, times(1)).logTransaction(
+                    mockBeneficiaryAccount,
+                    TransactionAction.DEPOSIT,
+                    Channel.CUSTOMER,
+                    mockBeneficiaryAccount.getBalance(),
+                    mockTransferAmount,
+                    "Receive transfer from " + mockSenderAccount.getAccountNumber()
+            );
         }
 
         @Test

@@ -104,7 +104,7 @@ public class SavingAccountsServiceTest {
                     "testInvalidEnglishName",
                     "2235485155248",
                     BigDecimal.TEN
-            );;
+            );
             when(mockUserRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
                     mockRequest.getThaiName(),
                     mockRequest.getEnglishName(),

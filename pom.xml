@@ -53,19 +53,15 @@
             <version>1.18.36</version>
             <scope>provided</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.bgee.log4jdbc-log4j2</groupId>-->
-<!--            <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>-->
-<!--            <version>${log4jdbc.log4j2.version}</version>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-<!--            <scope>test</scope>-->
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
+        <finalName>saving-account-web-service</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -80,6 +76,19 @@
                         <junit.jupiter.execution.parallel.enabled>true</junit.jupiter.execution.parallel.enabled>
                     </systemProperties>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <exclude>**/*.java</exclude>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.2.4</version> <!-- Use the appropriate version -->
             </plugin>
         </plugins>
     </build>

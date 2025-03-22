@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Month;
 import java.util.Objects;
 
 @RestController
@@ -169,12 +170,6 @@ public class SavingAccountController {
                     );
             default -> ResponseEntity.notFound().build();
         };
-    }
-
-    @GetMapping(path = "/history")
-    @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<?> listTransactions() {
-        return ResponseEntity.ok().build();
     }
 
     private boolean userPrincipleIsInvalid(Authentication authentication) {

@@ -2,6 +2,9 @@ package org.pete.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -23,8 +26,10 @@ public class Customer {
     private String citizenId;
     @Column(name = "PIN_NUM", length = 6, nullable = false)
     private String pinNum;
+    @CreationTimestamp
     @Column(name = "CREATION_DATE", nullable = false)
     private LocalDateTime creationDate;
+    @UpdateTimestamp
     @Column(name = "LAST_UPDATE_DATE", nullable = false)
     private LocalDateTime lastUpdateDate;
 }

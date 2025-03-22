@@ -59,8 +59,8 @@ public class CustomerService {
         customer.setEnglishName(registerCustomerRequest.getEnglishName().trim());
         customer.setEmail(registerCustomerRequest.getEmail().trim());
         customer.setCitizenId(registerCustomerRequest.getCitizenId().trim());
-        customer.setCreationDate(LocalDateTime.now());
-        customer.setLastUpdateDate(LocalDateTime.now());
+//        customer.setCreationDate(LocalDateTime.now());
+//        customer.setLastUpdateDate(LocalDateTime.now());
 
         customer.setPassword(bCryptPasswordEncoder.encode(password));
         customer.setPinNum(bCryptPasswordEncoder.encode(pinNumber));

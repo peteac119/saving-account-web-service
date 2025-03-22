@@ -145,8 +145,6 @@ public class CustomerServiceTest {
             assertEquals(mockCustomerRequest.getThaiName().trim(), actualCustomer.getThaiName());
             assertEquals(mockCustomerRequest.getEnglishName().trim(), actualCustomer.getEnglishName());
             assertEquals(mockCustomerRequest.getPinNum().trim(), actualCustomer.getPinNum());
-            assertNotNull(actualCustomer.getCreationDate());
-            assertNotNull(actualCustomer.getLastUpdateDate());
         }
     }
 

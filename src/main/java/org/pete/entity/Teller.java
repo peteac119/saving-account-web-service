@@ -2,6 +2,8 @@ package org.pete.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -20,8 +22,10 @@ public class Teller {
     private String username;
     @Column(name = "PASSWORD", length = 20, nullable = false)
     private String password;
+    @CreationTimestamp
     @Column(name = "CREATION_DATE", nullable = false)
     private LocalDateTime creationDate;
+    @UpdateTimestamp
     @Column(name = "LAST_UPDATE_DATE", nullable = false)
     private LocalDateTime lastUpdateDate;
 }

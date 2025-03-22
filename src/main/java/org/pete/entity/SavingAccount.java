@@ -2,6 +2,8 @@ package org.pete.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,8 +19,10 @@ public class SavingAccount {
     private String accountNumber;
     @Column(name = "BALANCE", precision = 18, scale = 2, nullable = false)
     private BigDecimal balance;
+    @CreationTimestamp
     @Column(name = "CREATION_DATE", nullable = false)
     private LocalDateTime creationDate;
+    @UpdateTimestamp
     @Column(name = "LAST_UPDATE_DATE", nullable = false)
     private LocalDateTime lastUpdateDate;
 

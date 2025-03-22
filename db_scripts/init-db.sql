@@ -9,9 +9,7 @@ create table users (
 	PIN_NUM  VARCHAR(100),
 	role    VARCHAR(50) not null,
 	CREATION_DATE  TIMESTAMP not null,
-	CREATED_BY	VARCHAR(100),
-	LAST_UPDATE_DATE TIMESTAMP not null,
-	UPDATED_BY	VARCHAR(100)
+	LAST_UPDATE_DATE TIMESTAMP not null
 );
 
 create table saving_accounts (
@@ -19,9 +17,7 @@ create table saving_accounts (
 	ACCOUNT_NUMBER	VARCHAR(7) unique not null,
 	BALANCE	numeric(18,2) not null,
 	CREATION_DATE  TIMESTAMP not null,
-	CREATED_BY	VARCHAR(100),
-	LAST_UPDATE_DATE TIMESTAMP not null,
-	UPDATED_BY	VARCHAR(100),
+	LAST_UPDATE_DATE TIMESTAMP not null
 
 	USER_ID  bigint references users (id)
 );
@@ -31,7 +27,7 @@ create table transaction_audit_log (
 	TRANSACTION_DATE  	DATE not null,
 	TRANSACTION_TIME  	TIME not null,
 	CODE 			  	VARCHAR(2) not null,
-	CHANNEL 		  	VARCHAR(2) not null,
+	CHANNEL 		  	VARCHAR(3) not null,
 	TRANSACTION_AMOUNT	numeric(18,2) not null,
 	BALANCE				numeric(18,2) not null,
 	REMARKS  		  	VARCHAR(1000),

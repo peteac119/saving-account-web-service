@@ -1,9 +1,13 @@
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/PETE_COMP
+    url: jdbc:postgresql://localhost:5432/pete_comp
     username: peteadmin
-    password: somepass123
+    password: somedbpass123
+  hikari:
+    connection-timeout: 30000
+    idle-timeout: 600000
+    max-lifetime: 1800000
   jpa:
     show-sql: true
     hibernate:

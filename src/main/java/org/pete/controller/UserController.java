@@ -1,7 +1,9 @@
 package org.pete.controller;
 
+import org.pete.model.request.CustomerLoginRequest;
 import org.pete.model.request.RegisterCustomerRequest;
 import org.pete.model.response.RegisterCustomerResponse;
+import org.pete.model.result.CustomerLoginResult;
 import org.pete.model.result.RegisterCustomerResult;
 import org.pete.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -42,14 +44,14 @@ public class UserController {
         };
     }
 
-//    @PostMapping(path = "/customer/login")
-//    public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest) {
-//        CustomerLoginResult result = userService.customerLogin(customerLoginRequest);
-//
-//        return switch (result) {
-//            case CustomerLoginResult.WrongPassword wrongPassword -> ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//            case CustomerLoginResult.UserNotFound userNotFound -> ResponseEntity.notFound().build();
-//            default -> ResponseEntity.ok().build();
-//        };
-//    }
+    @PostMapping(path = "/customer/login")
+    public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest) {
+        CustomerLoginResult result = userService.customerLogin(customerLoginRequest);
+
+        return switch (result) {
+            case CustomerLoginResult.WrongPassword wrongPassword -> ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            case CustomerLoginResult.UserNotFound userNotFound -> ResponseEntity.notFound().build();
+            default -> ResponseEntity.ok().build();
+        };
+    }
 }

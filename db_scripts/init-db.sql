@@ -9,7 +9,8 @@ create table users (
 	PIN_NUM  VARCHAR(100),
 	role    VARCHAR(50) not null,
 	CREATION_DATE  TIMESTAMP not null,
-	LAST_UPDATE_DATE TIMESTAMP not null
+	LAST_UPDATE_DATE TIMESTAMP not null,
+	LAST_LOGIN_DATE TIMESTAMP
 );
 
 create table saving_accounts (
@@ -31,6 +32,7 @@ create table transaction_audit_log (
 	TRANSACTION_AMOUNT	numeric(18,2) not null,
 	BALANCE				numeric(18,2) not null,
 	REMARKS  		  	VARCHAR(1000),
+
 	ACCOUNT_ID	bigint 	references saving_accounts (id)
 );
 

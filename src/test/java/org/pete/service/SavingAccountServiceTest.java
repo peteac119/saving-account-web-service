@@ -22,13 +22,13 @@ import static org.mockito.Mockito.*;
 
 public class SavingAccountServiceTest {
 
-    private final SavingAccountRepository savingAccountRepository = Mockito.mock(SavingAccountRepository.class);
-    private final CustomerRepository customerRepository = Mockito.mock(CustomerRepository.class);
-    private final BCryptPasswordEncoder bCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
+    private final SavingAccountRepository mockSavingAccountRepository = Mockito.mock(SavingAccountRepository.class);
+    private final CustomerRepository mockCustomerRepository = Mockito.mock(CustomerRepository.class);
+    private final BCryptPasswordEncoder mockBCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
     private final SavingAccountService savingAccountService = new SavingAccountService(
-            savingAccountRepository,
-            customerRepository,
-            bCryptPasswordEncoder
+            mockSavingAccountRepository,
+            mockCustomerRepository,
+            mockBCryptPasswordEncoder
     );
 
     @Nested
@@ -45,18 +45,18 @@ public class SavingAccountServiceTest {
             );
             Customer mockCustomer = new Customer();
             Long mockAccountNumber = 1000000L;
-            when(customerRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
+            when(mockCustomerRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
                     mockRequest.getThaiName(),
                     mockRequest.getEnglishName(),
                     mockRequest.getCitizenId()
             )).thenReturn(mockCustomer);
-            when(savingAccountRepository.save(any(SavingAccount.class))).thenAnswer(input -> input.getArguments()[0]);
-            when(savingAccountRepository.nextAccountNumber()).thenReturn(mockAccountNumber);
+            when(mockSavingAccountRepository.save(any(SavingAccount.class))).thenAnswer(input -> input.getArguments()[0]);
+            when(mockSavingAccountRepository.nextAccountNumber()).thenReturn(mockAccountNumber);
 
             CreateSavingAccountResult actualResult = savingAccountService.createSavingAccount(mockRequest);
 
             assertThat(actualResult, instanceOf(CreateSavingAccountResult.Success.class));
-            verify(savingAccountRepository, times(1)).save(savingAccountArgumentCaptor.capture());
+            verify(mockSavingAccountRepository, times(1)).save(savingAccountArgumentCaptor.capture());
             assertSavingAccountInfo(mockRequest, savingAccountArgumentCaptor.getValue(), mockAccountNumber, mockCustomer);
         }
 
@@ -69,7 +69,7 @@ public class SavingAccountServiceTest {
                     "2235485155248",
                     BigDecimal.TEN
             );;
-            when(customerRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
+            when(mockCustomerRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
                     mockRequest.getThaiName(),
                     mockRequest.getEnglishName(),
                     mockRequest.getCitizenId()
@@ -78,7 +78,7 @@ public class SavingAccountServiceTest {
             CreateSavingAccountResult actualResult = savingAccountService.createSavingAccount(mockRequest);
 
             assertThat(actualResult, instanceOf(CreateSavingAccountResult.CustNotFound.class));
-            verify(savingAccountRepository, times(0)).save(any(SavingAccount.class));
+            verify(mockSavingAccountRepository, times(0)).save(any(SavingAccount.class));
         }
 
         private void assertSavingAccountInfo(CreateSavingAccountRequest mockRequest,

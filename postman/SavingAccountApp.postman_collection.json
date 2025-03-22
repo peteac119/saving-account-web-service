@@ -1,0 +1,396 @@
+{
+	"info": {
+		"_postman_id": "905d96fd-71a4-4280-93c5-1f51405d79fe",
+		"name": "SavingAccountApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11770067"
+	},
+	"item": [
+		{
+			"name": "RegisterFirstCustomer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"thaiName\": \"ลูกค้า คนแรก\",\r\n    \"englishName\": \"First Customer\",\r\n    \"email\": \"test@customer.com\",\r\n    \"password\": \"some_password\",\r\n    \"citizenId\": \"1234567890123\",\r\n    \"pinNum\": \"554487\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/customer/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"customer",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RegisterSecondCustomer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"thaiName\": \"ลูกค้า คนแรก\",\r\n    \"englishName\": \"First Customer\",\r\n    \"email\": \"test@customer.com\",\r\n    \"password\": \"some_password\",\r\n    \"citizenId\": \"1234567890123\",\r\n    \"pinNum\": \"335482\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/customer/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"customer",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LoginFirstCustomer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test@customer.com\",\r\n    \"password\": \"some_password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/customer/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"customer",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LoginSecondCustomer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test@secondcustomer.com\",\r\n    \"password\": \"some_password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/customer/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"customer",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateSavingAccountForFirstCustomer",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "random_password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "teller.ishere@somemail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"thaiName\": \"ลูกค้า คนแรก\",\r\n    \"englishName\": \"First Customer\",\r\n    \"citizenId\": \"1234567890123\",\r\n    \"depositAmount\": \"50000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/saving-account/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"saving-account",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateSavingAccountForSecondCustomer",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "random_password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "teller.ishere@somemail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"thaiName\": \"ลูกค้า คนที่สอง\",\r\n    \"englishName\": \"Second Customer\",\r\n    \"citizenId\": \"1112223334456\",\r\n    \"depositAmount\": \"100000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/saving-account/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"saving-account",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DepositForFirstCustomer",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "random_password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "teller.ishere@somemail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"depositAmount\": \"4000.25\",\r\n    \"accountNumber\": \"1000000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/saving-account/deposit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"saving-account",
+						"deposit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TransferFromSecondCustomerToFirstCustomer",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "test@secondcustomer.com",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "some_password",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"senderAccountNum\": \"1000001\",\r\n    \"beneficiaryAccountNum\": \"1000000\",\r\n    \"transferAmount\": \"10000\",\r\n    \"pinNumber\": \"123566\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/saving-account/transfer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"saving-account",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetFirstCustomerAccountDetail",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "test@customer.com",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "some_password",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/saving-account/1000000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"saving-account",
+						"1000000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetSecondCustomerAccountDetail",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "test@secondcustomer.com",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "some_password",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/saving-account/1000001",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"saving-account",
+						"1000001"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

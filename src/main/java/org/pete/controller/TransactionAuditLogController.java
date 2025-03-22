@@ -3,7 +3,6 @@ package org.pete.controller;
 import org.pete.model.principle.UserPrinciple;
 import org.pete.model.response.TransactionHistoryResponse;
 import org.pete.model.result.TransactionHistoryResult;
-import org.pete.repository.SavingAccountRepository;
 import org.pete.service.TransactionAuditLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

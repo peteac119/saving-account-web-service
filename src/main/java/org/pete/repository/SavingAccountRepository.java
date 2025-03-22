@@ -9,8 +9,8 @@ import java.util.List;
 
 @Repository
 public interface SavingAccountRepository extends JpaRepository<SavingAccount, Long> {
-    @Query(value = "select nextval('saving_account_id_seq')", nativeQuery = true)
-    Long nextId();
+    @Query(value = "select nextval('account_num_seq')", nativeQuery = true)
+    Long nextAccountNumber();
 
     List<SavingAccount> findByCustomerId(Long customerId);
 

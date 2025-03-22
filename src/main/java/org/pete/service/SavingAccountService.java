@@ -52,15 +52,12 @@ public class SavingAccountService {
     }
 
     private SavingAccount createNewAccount(Customer customer, CreateSavingAccountRequest request) {
-        Long newId = savingAccountRepository.nextId();
+        Long newAccountNumber = savingAccountRepository.nextAccountNumber();
         BigDecimal depositAmount = request.getDepositAmount();
 
         SavingAccount savingAccount = new SavingAccount();
-        savingAccount.setId(newId);
-        savingAccount.setAccountNumber(generateAccountNumber(newId));
+        savingAccount.setAccountNumber(generateAccountNumber(newAccountNumber));
         savingAccount.setCustomer(customer);
-        savingAccount.setCreationDate(LocalDateTime.now());
-        savingAccount.setLastUpdateDate(LocalDateTime.now());
 
         if (Objects.nonNull(depositAmount)) {
             savingAccount.setBalance(depositAmount);

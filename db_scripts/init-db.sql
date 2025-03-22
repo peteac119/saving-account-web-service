@@ -43,4 +43,9 @@ START WITH 1000000
 INCREMENT BY 1
 MAXVALUE 9999999;
 
+-- Create teller for testing
+INSERT INTO users
+(thai_name, english_name, email, "password", citizen_id, pin_num, "role", creation_date, created_by, last_update_date, updated_by)
+VALUES('เทลเลอร์ ยินดีให้บริการ', 'Teller Ishere', 'teller.ishere@somemail.com', '$2a$12$hgJrlTqGI/.52RSrQw7a8.lBd6BslxE36keA0bdRF74q578NQXyvO', '1112225534587', '$2a$12$qKF6AELU.dA0Tk4UYpfYi.zZJtZInjBhoi9raUOxZM6.upE8xIzCe', '[TELLER]', now(), NULL, now(), NULL);
+
 commit;

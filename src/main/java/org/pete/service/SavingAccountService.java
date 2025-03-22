@@ -7,6 +7,7 @@ import org.pete.model.request.DepositRequest;
 import org.pete.model.request.TransferRequest;
 import org.pete.model.result.CreateSavingAccountResult;
 import org.pete.model.result.DepositResult;
+import org.pete.model.result.FindSavingAccountInfoResult;
 import org.pete.model.result.TransferResult;
 import org.pete.repository.UserRepository;
 import org.pete.repository.SavingAccountRepository;
@@ -174,13 +175,24 @@ public class SavingAccountService {
     }
 
     @Transactional(readOnly = true)
-    public void findSavingAccount(Long customerId) {
-//        List<SavingAccounts> savingAccountsList = savingAccountRepository.findByCustomerId(customerId);
-//
-//        if (Objects.isNull(savingAccountsList) || savingAccountsList.isEmpty()) {
-//            return;
-//        }
-//
-//        return;
+    public FindSavingAccountInfoResult findSavingAccountInfo(String accountNumber, Long requesterId) {
+        SavingAccounts savingAccounts = savingAccountRepository.findOneByAccountNumber(accountNumber);
+
+        if (Objects.isNull(savingAccounts)) {
+            return new FindSavingAccountInfoResult.AccountNotFound();
+        }
+
+        Users accountOwner = savingAccounts.getUsers();
+
+        if (!Objects.equals(accountOwner.getId(), requesterId)) {
+            return new FindSavingAccountInfoResult.WrongAccountNumber();
+        }
+
+        return new FindSavingAccountInfoResult.Success(
+                savingAccounts.getAccountNumber(),
+                savingAccounts.getBalance(),
+                savingAccounts.getCreationDate(),
+                savingAccounts.getLastUpdateDate()
+        );
     }
 }

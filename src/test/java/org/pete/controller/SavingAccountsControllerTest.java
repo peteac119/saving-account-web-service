@@ -12,9 +12,11 @@ import org.pete.model.request.DepositRequest;
 import org.pete.model.request.TransferRequest;
 import org.pete.model.response.CreateSavingAccountResponse;
 import org.pete.model.response.DepositResponse;
+import org.pete.model.response.FindSavingAccountInfoResponse;
 import org.pete.model.response.TransferResponse;
 import org.pete.model.result.CreateSavingAccountResult;
 import org.pete.model.result.DepositResult;
+import org.pete.model.result.FindSavingAccountInfoResult;
 import org.pete.model.result.TransferResult;
 import org.pete.service.SavingAccountService;
 import org.springframework.http.HttpStatus;
@@ -22,10 +24,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 public class SavingAccountsControllerTest {
@@ -272,17 +274,90 @@ public class SavingAccountsControllerTest {
                     new TransferResult.NotPinNumberProvided()
             );
         }
-
-        private Users mockUser(Long userId) {
-            Users users = new Users();
-            users.setId(userId);
-
-            return users;
-        }
     }
 
     @Nested
-    public class FindingAccountTestSuite {
+    public class FindingAccountInfoTestSuite {
+        @Test
+        public void should_return_ok_status_if_getting_account_info_successfully() {
+            Long mockUserId = 5L;
+            String mockAccountNumber = "accountNumber";
+            Users mockUser = mockUser(mockUserId);
+            UserPrinciple mockUserPrinciple = new UserPrinciple(mockUser);
+            Authentication mockAuthentication = Mockito.mock(Authentication.class);
+            when(mockAuthentication.getPrincipal()).thenReturn(mockUserPrinciple);
+            when(mockSavingAccountService.findSavingAccountInfo(mockAccountNumber, mockUserId))
+                    .thenReturn(new FindSavingAccountInfoResult.Success(
+                            mockAccountNumber,
+                            BigDecimal.TEN,
+                            LocalDateTime.now(),
+                            LocalDateTime.now()
+                    ));
 
+            ResponseEntity<FindSavingAccountInfoResponse> actualResponse =
+                    savingAccountController.findSavingAccountInfo(mockAccountNumber, mockAuthentication);
+
+            assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+            FindSavingAccountInfoResponse responseBody = actualResponse.getBody();
+            assertEquals(mockAccountNumber, responseBody.accountNumber());
+            assertEquals(BigDecimal.TEN, responseBody.currentBalance());
+            assertNotNull(responseBody.creationDate());
+            assertNotNull(responseBody.latestUpdateDate());
+        }
+
+        @Test
+        public void should_return_not_found_status_if_account_is_not_found() {
+            Long mockUserId = 6L;
+            String mockAccountNumber = "invalidAccountNumber";
+            Users mockUser = mockUser(mockUserId);
+            UserPrinciple mockUserPrinciple = new UserPrinciple(mockUser);
+            Authentication mockAuthentication = Mockito.mock(Authentication.class);
+            when(mockAuthentication.getPrincipal()).thenReturn(mockUserPrinciple);
+            when(mockSavingAccountService.findSavingAccountInfo(mockAccountNumber, mockUserId))
+                    .thenReturn(new FindSavingAccountInfoResult.AccountNotFound());
+
+            ResponseEntity<FindSavingAccountInfoResponse> actualResponse =
+                    savingAccountController.findSavingAccountInfo(mockAccountNumber, mockAuthentication);
+
+            assertEquals(HttpStatus.NOT_FOUND, actualResponse.getStatusCode());
+            assertNull(actualResponse.getBody());
+        }
+
+        @Test
+        public void should_return_not_found_status_if_requester_id_is_not_the_same_in_the_account() {
+            Long mockUserId = 7L;
+            String mockAccountNumber = "wrongAccountNumber";
+            Users mockUser = mockUser(mockUserId);
+            UserPrinciple mockUserPrinciple = new UserPrinciple(mockUser);
+            Authentication mockAuthentication = Mockito.mock(Authentication.class);
+            when(mockAuthentication.getPrincipal()).thenReturn(mockUserPrinciple);
+            when(mockSavingAccountService.findSavingAccountInfo(mockAccountNumber, mockUserId))
+                    .thenReturn(new FindSavingAccountInfoResult.AccountNotFound());
+
+            ResponseEntity<FindSavingAccountInfoResponse> actualResponse =
+                    savingAccountController.findSavingAccountInfo(mockAccountNumber, mockAuthentication);
+
+            assertEquals(HttpStatus.NOT_FOUND, actualResponse.getStatusCode());
+            assertNull(actualResponse.getBody());
+        }
+
+        @Test
+        public void should_return_unprocessable_entity_status_if_user_principle_is_not_found() {
+            Authentication mockAuthentication = Mockito.mock(Authentication.class);
+            when(mockAuthentication.getPrincipal()).thenReturn(null);
+
+            ResponseEntity<FindSavingAccountInfoResponse> actualResponse =
+                    savingAccountController.findSavingAccountInfo("anyAccountNumber", mockAuthentication);
+
+            assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, actualResponse.getStatusCode());
+            assertNull(actualResponse.getBody());
+        }
+    }
+
+    private Users mockUser(Long userId) {
+        Users users = new Users();
+        users.setId(userId);
+
+        return users;
     }
 }

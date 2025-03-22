@@ -6,9 +6,11 @@ import org.pete.model.request.DepositRequest;
 import org.pete.model.request.TransferRequest;
 import org.pete.model.response.CreateSavingAccountResponse;
 import org.pete.model.response.DepositResponse;
+import org.pete.model.response.FindSavingAccountInfoResponse;
 import org.pete.model.response.TransferResponse;
 import org.pete.model.result.CreateSavingAccountResult;
 import org.pete.model.result.DepositResult;
+import org.pete.model.result.FindSavingAccountInfoResult;
 import org.pete.model.result.TransferResult;
 import org.pete.service.SavingAccountService;
 import org.springframework.http.HttpStatus;
@@ -88,7 +90,7 @@ public class SavingAccountController {
     @PostMapping(path = "/transfer")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<TransferResponse> transfer(@RequestBody TransferRequest transferRequest, Authentication authentication) {
-        if (Objects.isNull(authentication) || !(authentication.getPrincipal() instanceof UserPrinciple)) {
+        if (userPrincipleIsInvalid(authentication)) {
             return ResponseEntity.unprocessableEntity().build();
         }
 
@@ -144,15 +146,38 @@ public class SavingAccountController {
         };
     }
 
-    @GetMapping
+    @GetMapping("/{accountNumber}")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<?> findSavingAccount() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<FindSavingAccountInfoResponse> findSavingAccountInfo(@PathVariable String accountNumber, Authentication authentication) {
+        if (userPrincipleIsInvalid(authentication)) {
+            return ResponseEntity.unprocessableEntity().build();
+        }
+
+        Long requesterId = ((UserPrinciple) authentication.getPrincipal()).getUsers().getId();
+        FindSavingAccountInfoResult result = savingAccountService.findSavingAccountInfo(accountNumber, requesterId);
+
+        return switch (result) {
+            case FindSavingAccountInfoResult.Success success ->
+                    ResponseEntity.ok(
+                            new FindSavingAccountInfoResponse(
+                                    success.getAccountNumber(),
+                                    success.getCurrentBalance(),
+                                    success.getCreationDate(),
+                                    success.getLatestUpdateDate(),
+                                    null
+                            )
+                    );
+            default -> ResponseEntity.notFound().build();
+        };
     }
 
     @GetMapping(path = "/history")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> listTransactions() {
         return ResponseEntity.ok().build();
+    }
+
+    private boolean userPrincipleIsInvalid(Authentication authentication) {
+        return Objects.isNull(authentication) || !(authentication.getPrincipal() instanceof UserPrinciple);
     }
 }

@@ -4,6 +4,7 @@ import org.pete.constant.Channel;
 import org.pete.constant.TransactionAction;
 import org.pete.entity.SavingAccounts;
 import org.pete.entity.TransactionAuditLog;
+import org.pete.model.response.TransactionHistoryRecord;
 import org.pete.model.result.TransactionHistoryResult;
 import org.pete.repository.SavingAccountRepository;
 import org.pete.repository.TransactionAuditLogRepository;
@@ -13,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Month;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,7 +59,10 @@ public class TransactionAuditLogService {
     }
 
     @Transactional(readOnly = true)
-    public TransactionHistoryResult listTransaction(String accountNumber, Month month, Long requesterId) {
+    public TransactionHistoryResult listTransaction(String accountNumber,
+                                                    Integer year,
+                                                    Integer month,
+                                                    Long requesterId) {
         SavingAccounts savingAccounts = savingAccountRepository.findOneByAccountNumber(accountNumber);
 
         if (Objects.isNull(savingAccounts)) {
@@ -69,11 +73,47 @@ public class TransactionAuditLogService {
             return new TransactionHistoryResult.WrongAccountNumber();
         }
 
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = LocalDate.now();
+        YearMonth requestedYearMonth = YearMonth.of(year, month);
+        LocalDate startDate = getStartDate(requestedYearMonth);
+        LocalDate endDate = getEndDate(requestedYearMonth);
 
-//        List<TransactionAuditLog> auditLogs = transactionAuditLogRepository.findByTransactionDateBetweenAndAccountId(, savingAccounts.getId());
+        List<TransactionAuditLog> auditLogs = transactionAuditLogRepository.findByTransactionDateBetweenAndSavingAccounts(startDate, endDate, savingAccounts);
+        List<TransactionHistoryRecord> transactionHistoryRecords = transformToHistoryRecord(auditLogs);
 
-        return new TransactionHistoryResult.Success(null);
+        return new TransactionHistoryResult.Success(transactionHistoryRecords);
+    }
+
+    private List<TransactionHistoryRecord> transformToHistoryRecord(List<TransactionAuditLog> auditLogs) {
+        if (Objects.isNull(auditLogs) || auditLogs.isEmpty()) {
+            return List.of();
+        }
+
+        return auditLogs.stream()
+                .map(auditLog -> new TransactionHistoryRecord(
+                        auditLog.getTransactionDate(),
+                        auditLog.getTransactionTime(),
+                        auditLog.getCode(),
+                        auditLog.getChannel(),
+                        auditLog.getTransactionAmount(),
+                        auditLog.getBalance(),
+                        auditLog.getRemarks()
+                ))
+                .toList();
+    }
+
+    private LocalDate getEndDate(YearMonth requestedYearMonth) {
+        return LocalDate.of(
+                requestedYearMonth.getYear(),
+                requestedYearMonth.getMonth(),
+                requestedYearMonth.atEndOfMonth().getDayOfMonth()
+        );
+    }
+
+    private LocalDate getStartDate(YearMonth requestedYearMonth) {
+        return LocalDate.of(
+                requestedYearMonth.getYear(),
+                requestedYearMonth.getMonth(),
+                1
+        );
     }
 }

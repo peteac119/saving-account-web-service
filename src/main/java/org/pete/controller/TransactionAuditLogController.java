@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Month;
 import java.util.Objects;
 
 @RestController
@@ -28,22 +27,23 @@ public class TransactionAuditLogController {
 
     @GetMapping
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<?> listTransactions(@RequestParam Integer monthNum,
-                                              @RequestParam String accountNumber,
-                                              Authentication authentication) {
+    public ResponseEntity<TransactionHistoryResponse> listTransactions(@RequestParam Integer year,
+                                                                       @RequestParam Integer month,
+                                                                       @RequestParam String accountNumber,
+                                                                       Authentication authentication) {
         if (userPrincipleIsInvalid(authentication)) {
             return ResponseEntity.unprocessableEntity().build();
         }
 
         Long requesterId = ((UserPrinciple) authentication.getPrincipal()).getUsers().getId();
-        Month month = Month.of(monthNum);
 
-        TransactionHistoryResult result = transactionAuditLogService.listTransaction(accountNumber, month, requesterId);
+        TransactionHistoryResult result = transactionAuditLogService.listTransaction(
+                accountNumber, year, month, requesterId);
 
         return switch (result) {
             case TransactionHistoryResult.Success success ->
                     ResponseEntity.ok(
-                        new TransactionHistoryResponse(success.getTransactionAuditLogs())
+                        new TransactionHistoryResponse(success.getTransactionHistoryRecords())
                     );
             default -> ResponseEntity.badRequest().build();
         };

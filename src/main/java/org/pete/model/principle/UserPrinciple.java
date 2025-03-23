@@ -50,12 +50,6 @@ public class UserPrinciple implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        // Credential for Teller is always non expired.
-        // This is just for demonstration.
-        if (users.getRole().contains(Role.TELLER.toString())) {
-            return true;
-        }
-
         if (Objects.isNull(users.getLastLoginDate())) {
             return false;
         }

@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -59,8 +60,8 @@ public class UserPrinciple implements UserDetails {
             return false;
         }
 
-        LocalDateTime expiredTime = users.getLastLoginDate().plusMinutes(30L);
+        Duration duration = Duration.between(users.getLastLoginDate(), LocalDateTime.now());
 
-        return users.getLastLoginDate().isBefore(expiredTime);
+        return duration.toMinutes() <= 30;
     }
 }

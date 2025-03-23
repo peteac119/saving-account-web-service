@@ -156,7 +156,7 @@ public class UsersServiceTest {
         @Test
         public void should_login_successfully() {
             UserLoginRequest mockRequest = new UserLoginRequest("testEmail", "testPassword");
-            Users mockUsers = mockUser("testEmail", "testPassword");
+            Users mockUsers = mockUser("testPassword");
             when(mockUserRepository.findOneByEmail(mockRequest.getEmail())).thenReturn(mockUsers);
             when(mockBCryptPasswordEncoder.matches(mockUsers.getPassword(), mockRequest.getPassword())).thenReturn(true);
 
@@ -178,7 +178,7 @@ public class UsersServiceTest {
         @Test
         public void should_login_fails_if_password_is_wrong() {
             UserLoginRequest mockRequest = new UserLoginRequest("testEmail", "testPassword");
-            Users mockUsers = mockUser("testEmail", "wrongPassword");
+            Users mockUsers = mockUser("wrongPassword");
             when(mockUserRepository.findOneByEmail(mockRequest.getEmail())).thenReturn(mockUsers);
             when(mockBCryptPasswordEncoder.matches(mockUsers.getPassword(), mockRequest.getPassword())).thenReturn(false);
 
@@ -187,9 +187,9 @@ public class UsersServiceTest {
             assertThat(actualResult, instanceOf(UserLoginResult.WrongPassword.class));
         }
 
-        private Users mockUser(String email, String password) {
+        private Users mockUser(String password) {
             Users users = new Users();
-            users.setEmail(email);
+            users.setEmail("testEmail");
             users.setPassword(password);
 
             return users;

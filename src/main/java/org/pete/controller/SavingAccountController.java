@@ -19,7 +19,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Month;
 import java.util.Objects;
 
 @RestController
@@ -95,7 +94,7 @@ public class SavingAccountController {
             return ResponseEntity.unprocessableEntity().build();
         }
 
-        Long senderId = ((UserPrinciple) authentication.getPrincipal()).getUsers().getId();
+        Long senderId = ((UserPrinciple) authentication.getPrincipal()).users().getId();
         TransferResult result = savingAccountService.transfer(transferRequest, senderId);
 
         return switch (result) {
@@ -154,7 +153,7 @@ public class SavingAccountController {
             return ResponseEntity.unprocessableEntity().build();
         }
 
-        Long requesterId = ((UserPrinciple) authentication.getPrincipal()).getUsers().getId();
+        Long requesterId = ((UserPrinciple) authentication.getPrincipal()).users().getId();
         FindSavingAccountInfoResult result = savingAccountService.findSavingAccountInfo(accountNumber, requesterId);
 
         return switch (result) {

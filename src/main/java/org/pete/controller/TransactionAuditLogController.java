@@ -35,7 +35,7 @@ public class TransactionAuditLogController {
             return ResponseEntity.unprocessableEntity().build();
         }
 
-        Long requesterId = ((UserPrinciple) authentication.getPrincipal()).getUsers().getId();
+        Long requesterId = ((UserPrinciple) authentication.getPrincipal()).users().getId();
 
         TransactionHistoryResult result = transactionAuditLogService.listTransaction(
                 accountNumber, year, month, requesterId);

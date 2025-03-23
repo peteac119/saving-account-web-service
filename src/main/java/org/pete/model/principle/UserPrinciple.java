@@ -1,6 +1,6 @@
 package org.pete.model.principle;
 
-import org.pete.constant.Role;
+import lombok.Getter;
 import org.pete.entity.Users;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,13 +10,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class UserPrinciple implements UserDetails {
 
-    private final Users users;
-
-    public UserPrinciple(Users users) {
-        this.users = users;
-    }
+public record UserPrinciple(Users users) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -42,10 +37,6 @@ public class UserPrinciple implements UserDetails {
     @Override
     public String getUsername() {
         return users.getEmail();
-    }
-
-    public Users getUsers() {
-        return users;
     }
 
     @Override

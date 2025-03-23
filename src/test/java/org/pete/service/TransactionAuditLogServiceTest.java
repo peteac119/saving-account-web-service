@@ -35,7 +35,7 @@ class TransactionAuditLogServiceTest {
     public class LogTransactionTestSuite {
         @Test
         public void should_log_with_positive_amount_when_action_is_deposit() {
-            SavingAccounts mockSavingAccount = mockSavingAccount(1L, "testAccountNumber", BigDecimal.TEN, 4L);
+            SavingAccounts mockSavingAccount = mockSavingAccount(1L, "testAccountNumber", 4L);
             ArgumentCaptor<TransactionAuditLog> captor = ArgumentCaptor.forClass(TransactionAuditLog.class);
             when(mockRepository.save(any(TransactionAuditLog.class))).thenReturn(null);
 
@@ -62,7 +62,7 @@ class TransactionAuditLogServiceTest {
 
         @Test
         public void should_log_with_negative_amount_when_action_is_transfer() {
-            SavingAccounts mockSavingAccount = mockSavingAccount(2L, "testAccountNumber", BigDecimal.TEN, 5L);
+            SavingAccounts mockSavingAccount = mockSavingAccount(2L, "testAccountNumber", 5L);
             ArgumentCaptor<TransactionAuditLog> captor = ArgumentCaptor.forClass(TransactionAuditLog.class);
             when(mockRepository.save(any(TransactionAuditLog.class))).thenReturn(null);
 
@@ -99,7 +99,7 @@ class TransactionAuditLogServiceTest {
             ArgumentCaptor<LocalDate> startDateCaptor = ArgumentCaptor.forClass(LocalDate.class);
             ArgumentCaptor<LocalDate> endDateCaptor = ArgumentCaptor.forClass(LocalDate.class);
             List<TransactionAuditLog> mockTransactionAuditLogs = mockTransactionAuditLogs();
-            SavingAccounts mockSavingAccount = mockSavingAccount(2L, mockAccountNumber, BigDecimal.TEN, mockRequesterId);
+            SavingAccounts mockSavingAccount = mockSavingAccount(2L, mockAccountNumber, mockRequesterId);
             when(mockSavingAccountRepository.findOneByAccountNumber(mockSavingAccount.getAccountNumber())).thenReturn(mockSavingAccount);
             when(mockRepository.findByTransactionDateBetweenAndSavingAccounts(any(LocalDate.class), any(LocalDate.class), eq(mockSavingAccount)))
                     .thenReturn(mockTransactionAuditLogs);
@@ -135,7 +135,7 @@ class TransactionAuditLogServiceTest {
             int mockYear = 2025;
             int mockMonth = 3;
             String mockAccountNumber = "anyAccountNumber";
-            SavingAccounts mockSavingAccount = mockSavingAccount(10L, mockAccountNumber, BigDecimal.TEN, 5L);
+            SavingAccounts mockSavingAccount = mockSavingAccount(10L, mockAccountNumber, 5L);
             when(mockSavingAccountRepository.findOneByAccountNumber(mockSavingAccount.getAccountNumber())).thenReturn(mockSavingAccount);
 
             TransactionHistoryResult actualResult = service.listTransaction(mockAccountNumber, mockYear, mockMonth, mockRequesterId);
@@ -172,7 +172,6 @@ class TransactionAuditLogServiceTest {
 
     private SavingAccounts mockSavingAccount(Long accountId,
                                              String accountNumber,
-                                             BigDecimal currentAmount,
                                              Long userId) {
         Users mockUser = new Users();
         mockUser.setId(userId);
@@ -180,7 +179,7 @@ class TransactionAuditLogServiceTest {
         SavingAccounts savingAccounts = new SavingAccounts();
         savingAccounts.setId(accountId);
         savingAccounts.setAccountNumber(accountNumber);
-        savingAccounts.setBalance(currentAmount);
+        savingAccounts.setBalance(BigDecimal.TEN);
         savingAccounts.setUsers(mockUser);
 
         return savingAccounts;

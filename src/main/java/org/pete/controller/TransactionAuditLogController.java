@@ -45,7 +45,7 @@ public class TransactionAuditLogController {
                     ResponseEntity.ok(
                         new TransactionHistoryResponse(success.getTransactionHistoryRecords())
                     );
-            default -> ResponseEntity.badRequest().build();
+            default -> ResponseEntity.notFound().build();
         };
     }
 

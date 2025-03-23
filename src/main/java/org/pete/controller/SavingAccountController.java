@@ -39,19 +39,30 @@ public class SavingAccountController {
             case CreateSavingAccountResult.CustNotFound custNotFound ->
                     ResponseEntity
                             .status(HttpStatus.NOT_FOUND)
-                            .body(new CreateSavingAccountResponse(
+                            .body(
+                                    new CreateSavingAccountResponse(
                                     null,
                                     null,
-                                    "Customer is not found."
-                            ));
+                                    "Customer is not found.")
+                            );
+            case CreateSavingAccountResult.AmountIsNegative amountIsNegative ->
+                    ResponseEntity
+                            .badRequest()
+                            .body(
+                                    new CreateSavingAccountResponse(
+                                            null,
+                                            null,
+                                            "Amount must be positive.")
+                            );
             case CreateSavingAccountResult.Success success->
                     ResponseEntity
                             .status(HttpStatus.CREATED)
-                            .body(new CreateSavingAccountResponse(
+                            .body(
+                                    new CreateSavingAccountResponse(
                                     success.getAccountNumber(),
                                     success.getCurrentBalance(),
-                                    null
-                            ));
+                                    null)
+                            );
             default -> ResponseEntity.unprocessableEntity().build();
         };
     }
@@ -64,17 +75,21 @@ public class SavingAccountController {
             case DepositResult.SavingAccountNotFound notFound ->
                     ResponseEntity
                             .status(HttpStatus.NOT_FOUND)
-                            .body(new DepositResponse(
+                            .body(
+                                    new DepositResponse(
                                     null,
                                     null ,
-                                    "Invalid account number."));
+                                    "Invalid account number.")
+                            );
             case DepositResult.DepositAmountIsLessThanOne lessThanOne->
                     ResponseEntity
                             .status(HttpStatus.BAD_REQUEST)
-                            .body(new DepositResponse(
+                            .body(
+                                    new DepositResponse(
                                     null,
                                     null,
-                                    "Deposit amount must be more than one."));
+                                    "Deposit amount must be more than one.")
+                            );
             case DepositResult.Success success ->
                     ResponseEntity.ok(
                         new DepositResponse(

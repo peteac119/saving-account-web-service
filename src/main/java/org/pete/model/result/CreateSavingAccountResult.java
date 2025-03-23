@@ -14,5 +14,6 @@ public class CreateSavingAccountResult {
         private final BigDecimal currentBalance;
     }
 
+    public static class AmountIsNegative extends CreateSavingAccountResult {}
     public static class CustNotFound extends CreateSavingAccountResult {}
 }

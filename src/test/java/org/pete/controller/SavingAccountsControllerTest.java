@@ -70,6 +70,22 @@ public class SavingAccountsControllerTest {
         }
 
         @Test
+        public void should_return_bad_request_http_status_if_the_amount_is_negative() {
+            CreateSavingAccountRequest mockRequest = new CreateSavingAccountRequest();
+            mockRequest.setEnglishName("Negative amount");
+            CreateSavingAccountResult.AmountIsNegative mockResult =  new CreateSavingAccountResult.AmountIsNegative();
+            when(mockSavingAccountService.createSavingAccount(mockRequest)).thenReturn(mockResult);
+
+            ResponseEntity<CreateSavingAccountResponse> response = savingAccountController.createSavingAccount(mockRequest);
+
+            CreateSavingAccountResponse actualResBody = response.getBody();
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertNull(actualResBody.accountNumber());
+            assertNull(actualResBody.currentBalance());
+            assertEquals("Amount must be positive.", actualResBody.errorMessage());
+        }
+
+        @Test
         public void should_return_unprocessable_entity_http_status_by_default() {
             CreateSavingAccountRequest mockRequest = new CreateSavingAccountRequest();
             mockRequest.setEnglishName("Some random happen");

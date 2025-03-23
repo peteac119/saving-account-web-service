@@ -50,6 +50,11 @@ public class SavingAccountService {
             return new CreateSavingAccountResult.CustNotFound();
         }
 
+        BigDecimal depositAmount = request.getDepositAmount();
+        if (amountIsNegative(depositAmount)) {
+            return new CreateSavingAccountResult.AmountIsNegative();
+        }
+
         SavingAccounts savingAccounts = createNewAccount(users, request);
         savingAccountRepository.save(savingAccounts);
 
@@ -62,6 +67,10 @@ public class SavingAccountService {
                 "This account is created by Teller.");
 
         return new CreateSavingAccountResult.Success(savingAccounts.getAccountNumber(), savingAccounts.getBalance());
+    }
+
+    private boolean amountIsNegative(BigDecimal depositAmount) {
+        return Objects.nonNull(depositAmount) && depositAmount.compareTo(BigDecimal.ZERO) < 0;
     }
 
     private SavingAccounts createNewAccount(Users users, CreateSavingAccountRequest request) {

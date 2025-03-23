@@ -118,6 +118,27 @@ public class SavingAccountsServiceTest {
         }
 
         @Test
+        public void should_return_amount_is_negative_if_negative_amount_is_provided() {
+            Users mockUsers = new Users();
+            CreateSavingAccountRequest mockRequest = new CreateSavingAccountRequest(
+                    "ส่งเงินติดลบมา",
+                    "testNegativeAmount",
+                    "2235485176248",
+                    BigDecimal.TEN.negate()
+            );
+            when(mockUserRepository.findOneByThaiNameAndEnglishNameAndCitizenId(
+                    mockRequest.getThaiName(),
+                    mockRequest.getEnglishName(),
+                    mockRequest.getCitizenId()
+            )).thenReturn(mockUsers);
+
+            CreateSavingAccountResult actualResult = savingAccountService.createSavingAccount(mockRequest);
+
+            assertThat(actualResult, instanceOf(CreateSavingAccountResult.AmountIsNegative.class));
+            verify(mockSavingAccountRepository, times(0)).save(any(SavingAccounts.class));
+        }
+
+        @Test
         public void should_return_customer_not_found_if_customer_does_not_exist() {
             CreateSavingAccountRequest mockRequest = new CreateSavingAccountRequest(
                     "ชื่อภาษาไทยที่ไม่มีจริง",

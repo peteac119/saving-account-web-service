@@ -79,8 +79,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/customer/login",
-					"protocol": "http",
+					"raw": "https://localhost:8080/customer/login",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],

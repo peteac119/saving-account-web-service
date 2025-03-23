@@ -123,6 +123,35 @@
 			"response": []
 		},
 		{
+			"name": "LoginTeller",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"teller.ishere@somemail.com\",\r\n    \"password\": \"random_password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/teller/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teller",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "CreateSavingAccountForFirstCustomer",
 			"request": {
 				"auth": {
@@ -224,6 +253,50 @@
 						{
 							"key": "username",
 							"value": "teller.ishere@somemail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"depositAmount\": \"4000.25\",\r\n    \"accountNumber\": \"1000000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/saving-account/deposit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"saving-account",
+						"deposit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DepositErrorIfCustomerTryToPerform",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "some_password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "test@customer.com",
 							"type": "string"
 						}
 					]
@@ -387,6 +460,186 @@
 					"path": [
 						"saving-account",
 						"1000001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FirstCustomerGetTransactionHistory",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "test@customer.com",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "some_password",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transaction-log?year=2025&month=3&accountNumber=1000001",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transaction-log"
+					],
+					"query": [
+						{
+							"key": "year",
+							"value": "2025"
+						},
+						{
+							"key": "month",
+							"value": "3"
+						},
+						{
+							"key": "accountNumber",
+							"value": "1000001"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SecondCustomerGetTransactionHistory",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "test@secondcustomer.com",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "some_password",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transaction-log?year=2025&month=3&accountNumber=1000001",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transaction-log"
+					],
+					"query": [
+						{
+							"key": "year",
+							"value": "2025"
+						},
+						{
+							"key": "month",
+							"value": "3"
+						},
+						{
+							"key": "accountNumber",
+							"value": "1000001"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SecondCustomerGetErrorIfTryToGetFirstCustAccount",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "test@secondcustomer.com",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "some_password",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transaction-log?year=2025&month=3&accountNumber=1000000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transaction-log"
+					],
+					"query": [
+						{
+							"key": "year",
+							"value": "2025"
+						},
+						{
+							"key": "month",
+							"value": "3"
+						},
+						{
+							"key": "accountNumber",
+							"value": "1000000"
+						}
 					]
 				}
 			},

@@ -1,27 +1,29 @@
 package org.pete.controller;
 
-import org.pete.model.request.CustomerLoginRequest;
+import org.pete.model.request.UserLoginRequest;
 import org.pete.model.request.RegisterCustomerRequest;
 import org.pete.model.response.RegisterCustomerResponse;
-import org.pete.model.result.CustomerLoginResult;
+import org.pete.model.result.UserLoginResult;
 import org.pete.model.result.RegisterCustomerResult;
 import org.pete.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class UserController {
+@RequestMapping("/customer")
+public class CustomerController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public CustomerController(UserService userService) {
         this.userService = userService;
     }
 
-    @PostMapping(path = "/customer/register")
+    @PostMapping(path = "/register")
     public ResponseEntity<RegisterCustomerResponse> registerCustomer(@RequestBody RegisterCustomerRequest registerCustomerRequest) {
         RegisterCustomerResult result = userService.registerCustomer(registerCustomerRequest);
         return switch (result) {
@@ -44,13 +46,13 @@ public class UserController {
         };
     }
 
-    @PostMapping(path = "/customer/login")
-    public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest) {
-        CustomerLoginResult result = userService.customerLogin(customerLoginRequest);
+    @PostMapping(path = "/login")
+    public ResponseEntity<?> customerLogin(@RequestBody UserLoginRequest userLoginRequest) {
+        UserLoginResult result = userService.login(userLoginRequest);
 
         return switch (result) {
-            case CustomerLoginResult.WrongPassword wrongPassword -> ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            case CustomerLoginResult.UserNotFound userNotFound -> ResponseEntity.notFound().build();
+            case UserLoginResult.WrongPassword wrongPassword -> ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            case UserLoginResult.UserNotFound userNotFound -> ResponseEntity.notFound().build();
             default -> ResponseEntity.ok().build();
         };
     }

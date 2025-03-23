@@ -2,9 +2,9 @@ package org.pete.service;
 
 import org.pete.constant.Role;
 import org.pete.entity.Users;
-import org.pete.model.request.CustomerLoginRequest;
+import org.pete.model.request.UserLoginRequest;
 import org.pete.model.request.RegisterCustomerRequest;
-import org.pete.model.result.CustomerLoginResult;
+import org.pete.model.result.UserLoginResult;
 import org.pete.model.result.RegisterCustomerResult;
 import org.pete.repository.UserRepository;
 import org.pete.validator.UserInfoValidator;
@@ -101,19 +101,19 @@ public class UserService {
     }
 
     @Transactional
-    public CustomerLoginResult customerLogin(CustomerLoginRequest customerLoginRequest) {
-        Users currentUser = userRepository.findOneByEmail(customerLoginRequest.getEmail());
+    public UserLoginResult login(UserLoginRequest userLoginRequest) {
+        Users currentUser = userRepository.findOneByEmail(userLoginRequest.getEmail());
 
         if (Objects.isNull(currentUser)) {
-            return new CustomerLoginResult.UserNotFound();
+            return new UserLoginResult.UserNotFound();
         }
 
-        if (!bCryptPasswordEncoder.matches(customerLoginRequest.getPassword(), currentUser.getPassword())) {
-            return new CustomerLoginResult.WrongPassword();
+        if (!bCryptPasswordEncoder.matches(userLoginRequest.getPassword(), currentUser.getPassword())) {
+            return new UserLoginResult.WrongPassword();
         }
 
         currentUser.setLastLoginDate(LocalDateTime.now());
 
-        return new CustomerLoginResult.LoginSuccess();
+        return new UserLoginResult.LoginSuccess();
     }
 }

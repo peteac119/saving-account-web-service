@@ -6,9 +6,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.pete.constant.Role;
 import org.pete.entity.Users;
-import org.pete.model.request.CustomerLoginRequest;
+import org.pete.model.request.UserLoginRequest;
 import org.pete.model.request.RegisterCustomerRequest;
-import org.pete.model.result.CustomerLoginResult;
+import org.pete.model.result.UserLoginResult;
 import org.pete.model.result.RegisterCustomerResult;
 import org.pete.repository.UserRepository;
 import org.pete.validator.UserInfoValidator;
@@ -155,36 +155,36 @@ public class UsersServiceTest {
     public class CustomerLoginTestSuite {
         @Test
         public void should_login_successfully() {
-            CustomerLoginRequest mockRequest = new CustomerLoginRequest("testEmail", "testPassword");
+            UserLoginRequest mockRequest = new UserLoginRequest("testEmail", "testPassword");
             Users mockUsers = mockUser("testEmail", "testPassword");
             when(mockUserRepository.findOneByEmail(mockRequest.getEmail())).thenReturn(mockUsers);
             when(mockBCryptPasswordEncoder.matches(mockUsers.getPassword(), mockRequest.getPassword())).thenReturn(true);
 
-            CustomerLoginResult actualResult = userService.customerLogin(mockRequest);
+            UserLoginResult actualResult = userService.login(mockRequest);
 
-            assertThat(actualResult, instanceOf(CustomerLoginResult.LoginSuccess.class));
+            assertThat(actualResult, instanceOf(UserLoginResult.LoginSuccess.class));
         }
 
         @Test
         public void should_login_fails_if_user_is_not_found() {
-            CustomerLoginRequest mockRequest = new CustomerLoginRequest("testEmail", "testPassword");
+            UserLoginRequest mockRequest = new UserLoginRequest("testEmail", "testPassword");
             when(mockUserRepository.findOneByEmail(mockRequest.getEmail())).thenReturn(null);
 
-            CustomerLoginResult actualResult = userService.customerLogin(mockRequest);
+            UserLoginResult actualResult = userService.login(mockRequest);
 
-            assertThat(actualResult, instanceOf(CustomerLoginResult.UserNotFound.class));
+            assertThat(actualResult, instanceOf(UserLoginResult.UserNotFound.class));
         }
 
         @Test
         public void should_login_fails_if_password_is_wrong() {
-            CustomerLoginRequest mockRequest = new CustomerLoginRequest("testEmail", "testPassword");
+            UserLoginRequest mockRequest = new UserLoginRequest("testEmail", "testPassword");
             Users mockUsers = mockUser("testEmail", "wrongPassword");
             when(mockUserRepository.findOneByEmail(mockRequest.getEmail())).thenReturn(mockUsers);
             when(mockBCryptPasswordEncoder.matches(mockUsers.getPassword(), mockRequest.getPassword())).thenReturn(false);
 
-            CustomerLoginResult actualResult = userService.customerLogin(mockRequest);
+            UserLoginResult actualResult = userService.login(mockRequest);
 
-            assertThat(actualResult, instanceOf(CustomerLoginResult.WrongPassword.class));
+            assertThat(actualResult, instanceOf(UserLoginResult.WrongPassword.class));
         }
 
         private Users mockUser(String email, String password) {

@@ -1,6 +1,5 @@
 package org.pete.model.principle;
 
-import lombok.Getter;
 import org.pete.entity.Users;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
